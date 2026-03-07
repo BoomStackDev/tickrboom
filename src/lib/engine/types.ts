@@ -1,0 +1,92 @@
+export interface Player {
+  name: string;
+  money: number; // in cents (100 = $1.00)
+  stocks: Record<string, number>; // stock name -> shares owned
+  avgCosts: Record<string, number>; // stock name -> average cost basis in cents
+  difficultyMult: number;
+  hasWon: boolean;
+}
+
+export interface DiceResult {
+  stock: string;
+  action: 'UP' | 'DOWN' | 'DIV';
+  amount: number; // 5, 10, or 20
+}
+
+export interface DicePlaceholder {
+  stock: '?';
+  action: '?';
+  amount: '?';
+}
+
+export interface GameEvent {
+  title: string;
+  message: string;
+  type: 'profit' | 'danger' | 'info';
+}
+
+export interface Notification {
+  type: 'profit' | 'danger' | 'neutral';
+  msg: string;
+}
+
+export interface TutorialFlags {
+  split: boolean;
+  crash: boolean;
+  divPaid: boolean;
+  divSkipped: boolean;
+}
+
+export interface GameState {
+  player: Player;
+  stockPrices: Record<string, number>;
+  stockNames: string[];
+  dice: DiceResult | DicePlaceholder;
+  logs: string[];
+  gameWon: boolean;
+  tutorialFlags: TutorialFlags;
+  tradeAmounts: Record<string, number | 'MAX'>;
+}
+
+export interface RollOutcome {
+  newState: GameState;
+  event: GameEvent | null;
+  notification: Notification | null;
+  log: string;
+}
+
+export interface StartMode {
+  id: string;
+  cash: number;
+  label: string;
+  mult: number;
+  difficulty: string;
+  desc: string;
+}
+
+export interface GameConfig {
+  mode: StartMode;
+  playerName: string;
+  stockNames?: string[];
+}
+
+export interface TradeAction {
+  type: 'BUY' | 'SELL';
+  stock: string;
+  amount: number | 'MAX';
+}
+
+export interface SaveFile {
+  id: string;
+  timestamp: number;
+  name: string;
+  netWorth: number;
+  data: GameState;
+  mode: StartMode;
+}
+
+export interface TickerItem {
+  sym: string;
+  val: string;
+  dir: 'up' | 'down';
+}
