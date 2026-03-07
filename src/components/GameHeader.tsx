@@ -126,7 +126,7 @@ export function GameHeader() {
         {/* Logo + player */}
         <div className="flex items-center gap-2 flex-none">
           <TrendingUp className="w-6 h-6 tb-green-text" />
-          <span className="font-black text-2xl tb-text">TICKRBOOM</span>
+          <span className="font-light text-2xl tb-text">Tickr</span><span className="font-black text-2xl tb-green-text">BOOM</span>
           <span className="text-sm tb-text-muted font-[family-name:var(--font-mono)] ml-1">
             {gameState.player.name} &middot; {gameState.player.difficultyMult}x
           </span>
@@ -168,7 +168,7 @@ export function GameHeader() {
         <div className="flex items-center justify-between px-4 pt-2 pb-1">
           <div className="flex items-center gap-1.5">
             <TrendingUp size={16} className="tb-green-text" />
-            <span className="font-black text-sm tb-text">TICKRBOOM</span>
+            <span className="font-light text-sm tb-text">Tickr</span><span className="font-black text-sm tb-green-text">BOOM</span>
             <span className="text-[10px] tb-text-muted font-[family-name:var(--font-mono)] ml-1 hidden sm:inline">
               {gameState.player.name} &middot; {gameState.player.difficultyMult}x
             </span>
