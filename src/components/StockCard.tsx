@@ -47,16 +47,16 @@ export function StockCard({ stock }: StockCardProps) {
   const pnl = shares > 0 ? (price - avgCost) * shares : 0;
 
   return (
-    <div className="tb-card card-elevated border tb-border rounded-xl p-3 hover:border-[var(--tb-text-muted)] transition-colors">
+    <div className="tb-card card-elevated border tb-border rounded-xl p-3 lg:p-5 hover:border-[var(--tb-text-muted)] transition-colors">
       {/* Header: name + badge + price */}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1.5">
-          <span className="font-bold tb-text text-xs tracking-wide">{stock}</span>
+          <span className="font-bold tb-text text-xs lg:text-sm tracking-wide">{stock}</span>
           <span className={`text-[9px] px-1.5 py-px rounded-full border font-bold ${status.cls}`}>
             {status.label}
           </span>
         </div>
-        <span className="font-[family-name:var(--font-mono)] font-bold tb-text text-sm">
+        <span className="font-[family-name:var(--font-mono)] font-bold tb-text text-sm lg:text-base">
           ${(price / 100).toFixed(2)}
         </span>
       </div>
@@ -74,7 +74,7 @@ export function StockCard({ stock }: StockCardProps) {
       </div>
 
       {/* Holdings row — single tight line */}
-      <div className="flex items-center gap-3 mb-2 text-[11px] font-[family-name:var(--font-mono)]">
+      <div className="flex items-center gap-3 mb-2 text-[11px] lg:text-sm font-[family-name:var(--font-mono)]">
         <span className="tb-text-muted">{shares.toLocaleString()} shares</span>
         {avgCost > 0 && <span className="tb-text-muted">avg ${(avgCost / 100).toFixed(2)}</span>}
         {pnl !== 0 && (
@@ -91,8 +91,8 @@ export function StockCard({ stock }: StockCardProps) {
             key={inc}
             onClick={() => { haptic(); setTradeAmount(stock, inc); }}
             className={`
-              px-1.5 py-1 rounded text-[10px] font-[family-name:var(--font-mono)] font-bold
-              min-w-[36px] min-h-[36px] lg:min-w-0 lg:min-h-0 lg:py-0.5
+              px-1.5 py-1 rounded text-[10px] lg:text-xs font-[family-name:var(--font-mono)] font-bold
+              min-w-[36px] min-h-[36px] lg:min-w-0 lg:min-h-[36px] lg:px-3 lg:py-1.5
               transition-colors
               ${tradeAmount === inc
                 ? 'bg-accent-green text-black'
@@ -106,8 +106,8 @@ export function StockCard({ stock }: StockCardProps) {
         <button
           onClick={() => { haptic(); setTradeAmount(stock, 'MAX'); }}
           className={`
-            px-1.5 py-1 rounded text-[10px] font-bold
-            min-w-[36px] min-h-[36px] lg:min-w-0 lg:min-h-0 lg:py-0.5
+            px-1.5 py-1 rounded text-[10px] lg:text-xs font-bold
+            min-w-[36px] min-h-[36px] lg:min-w-0 lg:min-h-[36px] lg:px-3 lg:py-1.5
             transition-colors
             ${tradeAmount === 'MAX'
               ? 'bg-accent-green text-black'
@@ -124,7 +124,7 @@ export function StockCard({ stock }: StockCardProps) {
         <button
           onClick={handleSell}
           disabled={shares <= 0 || isRolling}
-          className="w-20 flex-none rounded-lg font-bold text-xs bg-red-500/10 border border-red-500/30 text-danger-red hover:bg-red-500/20 disabled:opacity-25 disabled:cursor-not-allowed h-10 lg:h-9 transition-colors"
+          className="w-20 flex-none rounded-lg font-bold text-xs lg:text-sm bg-red-500/10 border border-red-500/30 text-danger-red hover:bg-red-500/20 disabled:opacity-25 disabled:cursor-not-allowed h-10 lg:h-11 transition-colors"
         >
           SELL
         </button>
@@ -135,12 +135,12 @@ export function StockCard({ stock }: StockCardProps) {
           onChange={(e) => setCustomInput(e.target.value)}
           onBlur={handleCustomAmount}
           onKeyDown={(e) => { if (e.key === 'Enter') handleCustomAmount(); }}
-          className="flex-1 min-w-0 tb-input border tb-border rounded-lg px-2 text-base font-[family-name:var(--font-mono)] h-10 lg:h-9 focus:outline-none focus:border-accent-green/50 text-center"
+          className="flex-1 min-w-0 tb-input border tb-border rounded-lg px-2 text-base lg:text-sm font-[family-name:var(--font-mono)] h-10 lg:h-11 focus:outline-none focus:border-accent-green/50 text-center"
         />
         <button
           onClick={handleBuy}
           disabled={isRolling || (gameState?.player.money ?? 0) < price}
-          className="w-20 flex-none rounded-lg font-bold text-xs bg-emerald-500/10 border border-emerald-500/30 tb-green-text hover:bg-emerald-500/20 disabled:opacity-25 disabled:cursor-not-allowed h-10 lg:h-9 transition-colors"
+          className="w-20 flex-none rounded-lg font-bold text-xs lg:text-sm bg-emerald-500/10 border border-emerald-500/30 tb-green-text hover:bg-emerald-500/20 disabled:opacity-25 disabled:cursor-not-allowed h-10 lg:h-11 transition-colors"
         >
           BUY
         </button>

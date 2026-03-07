@@ -83,76 +83,116 @@ export function GameHeader() {
     return `$${dollars.toFixed(2)}`;
   };
 
+  const rollButton = (
+    <button
+      onClick={handleRoll}
+      disabled={isRolling || gameState.gameWon || !!useUIStore.getState().activeEvent}
+      className={`
+        flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm
+        min-h-[48px] min-w-[110px] justify-center
+        transition-all duration-200
+        ${isRolling
+          ? 'bg-[var(--tb-border)] tb-text-muted cursor-not-allowed'
+          : 'bg-accent-green text-black hover:brightness-110 active:scale-95'
+        }
+      `}
+    >
+      <Dice5 size={18} />
+      {isRolling ? 'ROLLING...' : 'ROLL'}
+    </button>
+  );
+
   return (
     <div className="sticky top-0 z-40 tb-bg backdrop-blur-sm border-b tb-border" style={{ backgroundColor: 'var(--tb-bg)', opacity: 0.98 }}>
-      {/* Top bar: logo + stats inline on desktop */}
-      <div className="flex items-center justify-between px-4 pt-2 pb-1">
-        <div className="flex items-center gap-1.5">
+
+      {/* ── Desktop: single compact bar ── */}
+      <div className="hidden lg:flex items-center gap-3 px-6 py-2">
+        {/* Logo + player */}
+        <div className="flex items-center gap-1.5 flex-none">
           <TrendingUp size={16} className="tb-green-text" />
-          <span className="font-black text-sm lg:text-base tb-text">TICKRBOOM</span>
-          <span className="text-[10px] tb-text-muted font-[family-name:var(--font-mono)] ml-1 hidden sm:inline">
+          <span className="font-black text-base tb-text">TICKRBOOM</span>
+          <span className="text-[10px] tb-text-muted font-[family-name:var(--font-mono)] ml-1">
             {gameState.player.name} &middot; {gameState.player.difficultyMult}x
           </span>
         </div>
-      </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-1.5 px-4 mb-1.5">
-        <div className="tb-card border tb-border rounded-lg px-2 py-1 text-center card-elevated">
-          <div className="text-[9px] tb-text-muted uppercase tracking-wider">Net Worth</div>
-          <div className="font-[family-name:var(--font-mono)] font-bold tb-green-text text-sm">
-            {formatMoney(netWorth)}
+        {/* Stats */}
+        <div className="flex gap-1.5 flex-1 min-w-0">
+          <div className="tb-card border tb-border rounded-lg px-3 py-1 text-center card-elevated flex-1">
+            <div className="text-[9px] tb-text-muted uppercase tracking-wider">Net Worth</div>
+            <div className="font-[family-name:var(--font-mono)] font-bold tb-green-text text-sm">{formatMoney(netWorth)}</div>
+          </div>
+          <div className="tb-card border tb-border rounded-lg px-3 py-1 text-center card-elevated flex-1">
+            <div className="text-[9px] tb-text-muted uppercase tracking-wider">Cash</div>
+            <div className="font-[family-name:var(--font-mono)] font-bold tb-text text-sm">{formatMoney(gameState.player.money)}</div>
+          </div>
+          <div className="tb-card border tb-border rounded-lg px-3 py-1 text-center card-elevated flex-1">
+            <div className="text-[9px] tb-text-muted uppercase tracking-wider">Score</div>
+            <div className="font-[family-name:var(--font-mono)] font-bold text-yellow-400 text-sm">{formatMoney(score)}</div>
           </div>
         </div>
-        <div className="tb-card border tb-border rounded-lg px-2 py-1 text-center card-elevated">
-          <div className="text-[9px] tb-text-muted uppercase tracking-wider">Cash</div>
-          <div className="font-[family-name:var(--font-mono)] font-bold tb-text text-sm">
-            {formatMoney(gameState.player.money)}
-          </div>
-        </div>
-        <div className="tb-card border tb-border rounded-lg px-2 py-1 text-center card-elevated">
-          <div className="text-[9px] tb-text-muted uppercase tracking-wider">Score</div>
-          <div className="font-[family-name:var(--font-mono)] font-bold text-yellow-400 text-sm">
-            {formatMoney(score)}
-          </div>
-        </div>
-      </div>
 
-      {/* Goal progress — thin bar */}
-      <div className="px-4 mb-2">
-        <div className="flex justify-between text-[9px] tb-text-muted mb-0.5">
-          <span>GOAL: $1B</span>
-          <span>{goalProgress.toFixed(1)}%</span>
-        </div>
-        <div className="w-full h-[2px] bg-[var(--tb-border)] rounded-full overflow-hidden">
-          <div
-            className="h-full bg-accent-green rounded-full transition-all duration-500"
-            style={{ width: `${goalProgress}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Dice + Roll button */}
-      <div className="flex items-center gap-3 px-4 pb-2.5">
-        <div className="flex-1">
+        {/* Dice + Roll */}
+        <div className="flex items-center gap-3 flex-none">
           <DiceDisplay />
+          {rollButton}
         </div>
-        <button
-          onClick={handleRoll}
-          disabled={isRolling || gameState.gameWon || !!useUIStore.getState().activeEvent}
-          className={`
-            flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm
-            min-h-[48px] min-w-[110px] justify-center
-            transition-all duration-200
-            ${isRolling
-              ? 'bg-[var(--tb-border)] tb-text-muted cursor-not-allowed'
-              : 'bg-accent-green text-black hover:brightness-110 active:scale-95'
-            }
-          `}
-        >
-          <Dice5 size={18} />
-          {isRolling ? 'ROLLING...' : 'ROLL'}
-        </button>
+      </div>
+
+      {/* Desktop: progress bar */}
+      <div className="hidden lg:block px-6 pb-1.5">
+        <div className="w-full h-[2px] bg-[var(--tb-border)] rounded-full overflow-hidden">
+          <div className="h-full bg-accent-green rounded-full transition-all duration-500" style={{ width: `${goalProgress}%` }} />
+        </div>
+      </div>
+
+      {/* ── Mobile: stacked layout ── */}
+      <div className="lg:hidden">
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-4 pt-2 pb-1">
+          <div className="flex items-center gap-1.5">
+            <TrendingUp size={16} className="tb-green-text" />
+            <span className="font-black text-sm tb-text">TICKRBOOM</span>
+            <span className="text-[10px] tb-text-muted font-[family-name:var(--font-mono)] ml-1 hidden sm:inline">
+              {gameState.player.name} &middot; {gameState.player.difficultyMult}x
+            </span>
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-1.5 px-4 mb-1.5">
+          <div className="tb-card border tb-border rounded-lg px-2 py-1 text-center card-elevated">
+            <div className="text-[9px] tb-text-muted uppercase tracking-wider">Net Worth</div>
+            <div className="font-[family-name:var(--font-mono)] font-bold tb-green-text text-sm">{formatMoney(netWorth)}</div>
+          </div>
+          <div className="tb-card border tb-border rounded-lg px-2 py-1 text-center card-elevated">
+            <div className="text-[9px] tb-text-muted uppercase tracking-wider">Cash</div>
+            <div className="font-[family-name:var(--font-mono)] font-bold tb-text text-sm">{formatMoney(gameState.player.money)}</div>
+          </div>
+          <div className="tb-card border tb-border rounded-lg px-2 py-1 text-center card-elevated">
+            <div className="text-[9px] tb-text-muted uppercase tracking-wider">Score</div>
+            <div className="font-[family-name:var(--font-mono)] font-bold text-yellow-400 text-sm">{formatMoney(score)}</div>
+          </div>
+        </div>
+
+        {/* Goal progress */}
+        <div className="px-4 mb-2">
+          <div className="flex justify-between text-[9px] tb-text-muted mb-0.5">
+            <span>GOAL: $1B</span>
+            <span>{goalProgress.toFixed(1)}%</span>
+          </div>
+          <div className="w-full h-[2px] bg-[var(--tb-border)] rounded-full overflow-hidden">
+            <div className="h-full bg-accent-green rounded-full transition-all duration-500" style={{ width: `${goalProgress}%` }} />
+          </div>
+        </div>
+
+        {/* Dice + Roll button */}
+        <div className="flex items-center gap-3 px-4 pb-2.5">
+          <div className="flex-1">
+            <DiceDisplay />
+          </div>
+          {rollButton}
+        </div>
       </div>
     </div>
   );

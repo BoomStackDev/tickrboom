@@ -20,7 +20,7 @@ export function GameBoard() {
       <GameHeader />
       <NotificationBanner />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 px-3 lg:px-4 mt-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-4 px-3 lg:px-6 mt-2">
         {stockNames.map((stock) => (
           <StockCard key={stock} stock={stock} />
         ))}
