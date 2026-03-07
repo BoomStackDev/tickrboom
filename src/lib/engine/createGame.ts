@@ -23,7 +23,7 @@ export function createNewGame(config: GameConfig): GameState {
   return {
     player: {
       name: config.playerName,
-      money: config.mode.cash,
+      money: config.mode.cash * 100,
       stocks,
       avgCosts,
       difficultyMult: config.mode.mult,
