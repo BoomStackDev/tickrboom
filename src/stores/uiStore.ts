@@ -3,6 +3,8 @@
 import { create } from 'zustand';
 import type { GameEvent, Notification } from '@/lib/engine/types';
 
+export type ThemeMode = 'dark' | 'light' | 'system';
+
 interface UIStore {
   view: 'MENU' | 'GAME';
   isRolling: boolean;
@@ -16,6 +18,7 @@ interface UIStore {
   turboMode: boolean;
   haptics: boolean;
   setupName: string;
+  theme: ThemeMode;
 
   // Actions
   setView: (view: 'MENU' | 'GAME') => void;
@@ -31,6 +34,7 @@ interface UIStore {
   toggleTurbo: () => void;
   toggleHaptics: () => void;
   setSetupName: (name: string) => void;
+  setTheme: (theme: ThemeMode) => void;
   loadSettings: () => void;
 }
 
@@ -47,6 +51,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
   turboMode: false,
   haptics: true,
   setupName: 'Trader 1',
+  theme: 'dark',
 
   setView: (view) => set({ view }),
   setRolling: (rolling) => set({ isRolling: rolling }),
@@ -86,11 +91,19 @@ export const useUIStore = create<UIStore>((set, get) => ({
     }
   },
 
+  setTheme: (theme) => {
+    set({ theme });
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tickrBoom_theme', theme);
+    }
+  },
+
   loadSettings: () => {
     if (typeof window === 'undefined') return;
     const turbo = localStorage.getItem('tickrBoom_turbo') === 'on';
     const haptics = localStorage.getItem('tickrBoom_haptics') !== 'off';
     const name = localStorage.getItem('tickrBoom_playerName') || 'Trader 1';
-    set({ turboMode: turbo, haptics, setupName: name });
+    const theme = (localStorage.getItem('tickrBoom_theme') as ThemeMode) || 'dark';
+    set({ turboMode: turbo, haptics, setupName: name, theme });
   },
 }));

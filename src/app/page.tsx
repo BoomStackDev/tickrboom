@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { useUIStore } from '@/stores/uiStore';
 import { useGameStore } from '@/stores/gameStore';
 import { MainMenu } from '@/components/MainMenu';
@@ -18,14 +19,21 @@ export default function GameShell() {
   const showSaveManager = useUIStore((s) => s.showSaveManager);
   const activeEvent = useUIStore((s) => s.activeEvent);
   const gameWon = useGameStore((s) => s.gameState?.gameWon ?? false);
+  const theme = useUIStore((s) => s.theme);
+  const { setTheme: setNextTheme } = useTheme();
 
   useEffect(() => {
     useUIStore.getState().loadSettings();
     useGameStore.getState().loadSaves();
   }, []);
 
+  // Sync zustand theme with next-themes
+  useEffect(() => {
+    setNextTheme(theme);
+  }, [theme, setNextTheme]);
+
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <div className="min-h-screen tb-bg">
       {view === 'MENU' && <MainMenu />}
       {view === 'GAME' && <GameBoard />}
 

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Montserrat, Roboto_Mono } from 'next/font/google';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import './globals.css';
 
 const montserrat = Montserrat({
@@ -18,7 +19,7 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: 'TickrBoom',
-  description: 'A stock market dice game',
+  description: 'Stock Market Dice Game',
 };
 
 export default function RootLayout({
@@ -27,9 +28,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${montserrat.variable} ${robotoMono.variable}`}>
-      <body className="font-[family-name:var(--font-montserrat)] antialiased">
-        {children}
+    <html lang="en" className={`${montserrat.variable} ${robotoMono.variable}`} suppressHydrationWarning>
+      <body className="font-[family-name:var(--font-montserrat)] antialiased tb-bg tb-text">
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

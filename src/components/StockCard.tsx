@@ -9,10 +9,10 @@ import { calculateNetWorth } from '@/lib/engine/netWorth';
 import { useState } from 'react';
 
 function getStatusBadge(price: number) {
-  if (price <= 25) return { label: 'DANGER', color: 'bg-red-900 text-danger-red border-red-700' };
-  if (price <= 100) return { label: 'NO YIELD', color: 'bg-slate-800 text-slate-400 border-slate-600' };
-  if (price >= SPLIT_VALUE - 25) return { label: 'SPLIT WATCH', color: 'bg-emerald-900 text-emerald-400 border-emerald-700' };
-  return { label: 'YIELD', color: 'bg-blue-900 text-blue-400 border-blue-700' };
+  if (price <= 25) return { label: 'DANGER', cls: 'bg-red-500/15 text-danger-red border-red-500/30' };
+  if (price <= 100) return { label: 'NO YIELD', cls: 'bg-[var(--tb-border)]/30 tb-text-muted border-[var(--tb-border)]' };
+  if (price >= SPLIT_VALUE - 25) return { label: 'SPLIT WATCH', cls: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 animate-badge-pulse' };
+  return { label: 'YIELD', cls: 'bg-blue-500/15 text-blue-400 border-blue-500/30' };
 }
 
 interface StockCardProps {
@@ -37,44 +37,32 @@ export function StockCard({ stock }: StockCardProps) {
   const status = getStatusBadge(price);
   const priceBarPercent = Math.min((price / SPLIT_VALUE) * 100, 100);
 
-  const handleBuy = () => {
-    haptic();
-    trade({ type: 'BUY', stock, amount: tradeAmount });
-  };
-
-  const handleSell = () => {
-    haptic();
-    trade({ type: 'SELL', stock, amount: tradeAmount });
-  };
-
+  const handleBuy = () => { haptic(); trade({ type: 'BUY', stock, amount: tradeAmount }); };
+  const handleSell = () => { haptic(); trade({ type: 'SELL', stock, amount: tradeAmount }); };
   const handleCustomAmount = () => {
     const val = parseInt(customInput, 10);
-    if (!isNaN(val) && val > 0) {
-      setTradeAmount(stock, val);
-      setCustomInput('');
-    }
+    if (!isNaN(val) && val > 0) { setTradeAmount(stock, val); setCustomInput(''); }
   };
 
-  const positionValue = shares * price;
   const pnl = shares > 0 ? (price - avgCost) * shares : 0;
 
   return (
-    <div className="bg-card-bg border border-card-border rounded-xl p-3 lg:p-2.5">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-1.5 lg:mb-1">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-white text-sm lg:text-xs">{stock}</span>
-          <span className={`text-[10px] px-1.5 py-0.5 rounded border font-bold ${status.color}`}>
+    <div className="tb-card card-elevated border tb-border rounded-xl p-3 hover:border-[var(--tb-text-muted)] transition-colors">
+      {/* Header: name + badge + price */}
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-1.5">
+          <span className="font-bold tb-text text-xs tracking-wide">{stock}</span>
+          <span className={`text-[9px] px-1.5 py-px rounded-full border font-bold ${status.cls}`}>
             {status.label}
           </span>
         </div>
-        <span className="font-[family-name:var(--font-mono)] font-bold text-white text-sm lg:text-xs">
+        <span className="font-[family-name:var(--font-mono)] font-bold tb-text text-sm">
           ${(price / 100).toFixed(2)}
         </span>
       </div>
 
       {/* Price bar */}
-      <div className="w-full h-1.5 bg-slate-800 rounded-full mb-2 lg:mb-1.5 overflow-hidden">
+      <div className="w-full h-1 bg-[var(--tb-border)] rounded-full mb-2 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-300 ${
             price <= 25 ? 'bg-danger-red' :
@@ -85,39 +73,30 @@ export function StockCard({ stock }: StockCardProps) {
         />
       </div>
 
-      {/* Position info */}
-      <div className="grid grid-cols-3 gap-2 mb-2 lg:mb-1.5 text-xs font-[family-name:var(--font-mono)]">
-        <div>
-          <span className="text-slate-500 block">Shares</span>
-          <span className="text-white font-bold">{shares.toLocaleString()}</span>
-        </div>
-        <div>
-          <span className="text-slate-500 block">Avg Cost</span>
-          <span className="text-white font-bold">
-            {avgCost > 0 ? `$${(avgCost / 100).toFixed(2)}` : '-'}
+      {/* Holdings row — single tight line */}
+      <div className="flex items-center gap-3 mb-2 text-[11px] font-[family-name:var(--font-mono)]">
+        <span className="tb-text-muted">{shares.toLocaleString()} shares</span>
+        {avgCost > 0 && <span className="tb-text-muted">avg ${(avgCost / 100).toFixed(2)}</span>}
+        {pnl !== 0 && (
+          <span className={`font-bold ${pnl > 0 ? 'tb-green-text' : 'text-danger-red'}`}>
+            {pnl > 0 ? '+' : ''}${(pnl / 100).toFixed(2)}
           </span>
-        </div>
-        <div>
-          <span className="text-slate-500 block">P&L</span>
-          <span className={`font-bold ${pnl > 0 ? 'text-accent-green' : pnl < 0 ? 'text-danger-red' : 'text-slate-400'}`}>
-            {pnl !== 0 ? `${pnl > 0 ? '+' : ''}$${(pnl / 100).toFixed(2)}` : '-'}
-          </span>
-        </div>
+        )}
       </div>
 
-      {/* Trade amount buttons */}
-      <div className="flex gap-1 mb-2 lg:mb-1.5 flex-wrap">
+      {/* Trade increment buttons */}
+      <div className="flex gap-1 mb-1.5 flex-wrap">
         {increments.map((inc) => (
           <button
             key={inc}
             onClick={() => { haptic(); setTradeAmount(stock, inc); }}
             className={`
-              px-2 py-1.5 lg:px-1.5 lg:py-0.5 rounded text-xs font-[family-name:var(--font-mono)] font-bold
-              min-w-[44px] min-h-[44px] lg:min-w-0 lg:min-h-0
+              px-1.5 py-1 rounded text-[10px] font-[family-name:var(--font-mono)] font-bold
+              min-w-[36px] min-h-[36px] lg:min-w-0 lg:min-h-0 lg:py-0.5
               transition-colors
               ${tradeAmount === inc
                 ? 'bg-accent-green text-black'
-                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-600'
+                : 'bg-[var(--tb-input-bg)] tb-text-secondary hover:bg-[var(--tb-hover)] border tb-border'
               }
             `}
           >
@@ -127,12 +106,12 @@ export function StockCard({ stock }: StockCardProps) {
         <button
           onClick={() => { haptic(); setTradeAmount(stock, 'MAX'); }}
           className={`
-            px-2 py-1.5 lg:px-1.5 lg:py-0.5 rounded text-xs font-bold
-            min-w-[44px] min-h-[44px] lg:min-w-0 lg:min-h-0
+            px-1.5 py-1 rounded text-[10px] font-bold
+            min-w-[36px] min-h-[36px] lg:min-w-0 lg:min-h-0 lg:py-0.5
             transition-colors
             ${tradeAmount === 'MAX'
               ? 'bg-accent-green text-black'
-              : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-600'
+              : 'bg-[var(--tb-input-bg)] tb-text-secondary hover:bg-[var(--tb-hover)] border tb-border'
             }
           `}
         >
@@ -141,46 +120,39 @@ export function StockCard({ stock }: StockCardProps) {
       </div>
 
       {/* Custom amount input */}
-      <div className="flex gap-1 mb-2 lg:mb-1.5">
+      <div className="flex gap-1 mb-1.5">
         <input
           type="number"
-          placeholder="Custom qty"
+          placeholder="Qty"
           value={customInput}
           onChange={(e) => setCustomInput(e.target.value)}
-          className="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 lg:py-0.5 text-xs font-[family-name:var(--font-mono)] text-white min-h-[44px] lg:min-h-0"
+          className="flex-1 tb-input border tb-border rounded px-2 py-1 text-[10px] font-[family-name:var(--font-mono)] min-h-[36px] lg:min-h-0 lg:py-0.5 focus:outline-none focus:border-accent-green/50"
         />
         <button
           onClick={handleCustomAmount}
-          className="px-3 py-1.5 lg:py-0.5 bg-slate-700 border border-slate-500 rounded text-xs font-bold text-white min-h-[44px] lg:min-h-0 hover:bg-slate-600"
+          className="px-2 py-1 bg-[var(--tb-input-bg)] border tb-border rounded text-[10px] font-bold tb-text-secondary min-h-[36px] lg:min-h-0 lg:py-0.5 hover:bg-[var(--tb-hover)]"
         >
           Set
         </button>
       </div>
 
       {/* Buy/Sell buttons */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-1.5">
         <button
           onClick={handleSell}
           disabled={shares <= 0 || isRolling}
-          className="py-2.5 lg:py-1.5 rounded-lg font-bold text-sm lg:text-xs bg-red-900/50 border border-red-700 text-danger-red hover:bg-red-900 disabled:opacity-30 disabled:cursor-not-allowed min-h-[44px] lg:min-h-0 transition-colors"
+          className="py-2 lg:py-1.5 rounded-lg font-bold text-xs bg-red-500/10 border border-red-500/30 text-danger-red hover:bg-red-500/20 disabled:opacity-25 disabled:cursor-not-allowed min-h-[40px] lg:min-h-0 transition-colors"
         >
           SELL
         </button>
         <button
           onClick={handleBuy}
           disabled={isRolling || (gameState?.player.money ?? 0) < price}
-          className="py-2.5 lg:py-1.5 rounded-lg font-bold text-sm lg:text-xs bg-emerald-900/50 border border-emerald-700 text-accent-green hover:bg-emerald-900 disabled:opacity-30 disabled:cursor-not-allowed min-h-[44px] lg:min-h-0 transition-colors"
+          className="py-2 lg:py-1.5 rounded-lg font-bold text-xs bg-emerald-500/10 border border-emerald-500/30 tb-green-text hover:bg-emerald-500/20 disabled:opacity-25 disabled:cursor-not-allowed min-h-[40px] lg:min-h-0 transition-colors"
         >
           BUY
         </button>
       </div>
-
-      {/* Position value */}
-      {shares > 0 && (
-        <div className="mt-2 text-center text-xs text-slate-500 font-[family-name:var(--font-mono)]">
-          Position: ${(positionValue / 100).toFixed(2)}
-        </div>
-      )}
     </div>
   );
 }

@@ -32,17 +32,12 @@ export function SaveManagerModal() {
   };
 
   const handleLoad = (save: typeof manualSaves[0]) => {
-    haptic();
-    manualLoad(save);
-    setView('GAME');
-    closeSaveManager();
+    haptic(); manualLoad(save); setView('GAME'); closeSaveManager();
   };
 
   const handleDelete = (id: string) => {
     haptic();
-    if (confirm('Delete this save?')) {
-      deleteSave(id);
-    }
+    if (confirm('Delete this save?')) deleteSave(id);
   };
 
   const formatDate = (ts: number) => {
@@ -60,19 +55,18 @@ export function SaveManagerModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={closeSaveManager}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center tb-overlay p-4" onClick={closeSaveManager}>
       <div
-        className="bg-card-bg border border-card-border rounded-2xl p-6 w-full max-w-md max-h-[80vh] overflow-y-auto animate-pop-in"
+        className="tb-card card-elevated border tb-border rounded-2xl p-6 w-full max-w-md max-h-[80vh] overflow-y-auto animate-pop-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-black">{mode === 'SAVE' ? 'SAVE GAME' : 'LOAD GAME'}</h2>
-          <button onClick={closeSaveManager} className="p-2 hover:bg-slate-800 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center">
-            <X size={20} />
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-black tb-text">{mode === 'SAVE' ? 'SAVE GAME' : 'LOAD GAME'}</h2>
+          <button onClick={closeSaveManager} className="p-2 hover:bg-[var(--tb-hover)] rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center tb-text-secondary">
+            <X size={18} />
           </button>
         </div>
 
-        {/* Save input (only in SAVE mode) */}
         {mode === 'SAVE' && (
           <div className="mb-4">
             <div className="flex gap-2">
@@ -80,64 +74,63 @@ export function SaveManagerModal() {
                 value={saveName}
                 onChange={(e) => setSaveName(e.target.value)}
                 placeholder="Save name..."
-                className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-white min-h-[44px]"
+                className="flex-1 tb-input border tb-border rounded-lg px-3 py-2 text-xs min-h-[40px] focus:outline-none focus:border-accent-green/50"
               />
               <button
                 onClick={handleSave}
                 disabled={!saveName.trim()}
-                className="px-4 py-2.5 rounded-lg bg-accent-green text-black font-bold text-sm min-h-[44px] disabled:opacity-30"
+                className="px-3 py-2 rounded-lg bg-accent-green text-black font-bold text-xs min-h-[40px] disabled:opacity-30"
               >
-                <Save size={16} />
+                <Save size={14} />
               </button>
             </div>
             {overwriteId && (
-              <p className="text-xs text-yellow-400 mt-1">Overwriting existing save</p>
+              <p className="text-[10px] text-yellow-400 mt-1">Overwriting existing save</p>
             )}
           </div>
         )}
 
-        {/* Save list */}
         {manualSaves.length === 0 ? (
-          <p className="text-slate-500 text-sm text-center py-8">No saved games</p>
+          <p className="tb-text-muted text-xs text-center py-8">No saved games</p>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {manualSaves.map((save) => (
               <div
                 key={save.id}
-                className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 flex items-center justify-between"
+                className="bg-[var(--tb-input-bg)] border tb-border rounded-lg p-2.5 flex items-center justify-between"
               >
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-sm truncate">{save.name}</div>
-                  <div className="text-xs text-slate-400 font-[family-name:var(--font-mono)]">
+                  <div className="font-bold text-xs tb-text truncate">{save.name}</div>
+                  <div className="text-[10px] tb-text-muted font-[family-name:var(--font-mono)]">
                     {formatMoney(save.netWorth)} &middot; {formatDate(save.timestamp)}
                   </div>
                   {save.mode && (
-                    <div className="text-[10px] text-slate-500">{save.mode.difficulty}</div>
+                    <div className="text-[9px] tb-text-muted">{save.mode.difficulty}</div>
                   )}
                 </div>
                 <div className="flex gap-1 ml-2">
                   {mode === 'SAVE' && (
                     <button
                       onClick={() => { setOverwriteId(save.id); setSaveName(save.name); }}
-                      className="p-2 hover:bg-slate-700 rounded min-w-[40px] min-h-[40px] flex items-center justify-center text-yellow-400"
+                      className="p-1.5 hover:bg-[var(--tb-hover)] rounded min-w-[36px] min-h-[36px] flex items-center justify-center text-yellow-400"
                       title="Overwrite"
                     >
-                      <Check size={16} />
+                      <Check size={14} />
                     </button>
                   )}
                   {mode === 'LOAD' && (
                     <button
                       onClick={() => handleLoad(save)}
-                      className="px-3 py-1.5 bg-accent-green/20 border border-emerald-700 rounded text-accent-green text-xs font-bold min-h-[40px]"
+                      className="px-2.5 py-1 bg-accent-green/10 border border-emerald-500/30 rounded tb-green-text text-[10px] font-bold min-h-[36px]"
                     >
                       LOAD
                     </button>
                   )}
                   <button
                     onClick={() => handleDelete(save.id)}
-                    className="p-2 hover:bg-red-900/50 rounded min-w-[40px] min-h-[40px] flex items-center justify-center text-danger-red"
+                    className="p-1.5 hover:bg-red-500/10 rounded min-w-[36px] min-h-[36px] flex items-center justify-center text-danger-red"
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={13} />
                   </button>
                 </div>
               </div>

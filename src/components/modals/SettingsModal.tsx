@@ -1,15 +1,23 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { useUIStore } from '@/stores/uiStore';
+import { X, Moon, Sun, Monitor } from 'lucide-react';
+import { useUIStore, type ThemeMode } from '@/stores/uiStore';
 import { useGameStore } from '@/stores/gameStore';
+
+const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Moon }[] = [
+  { value: 'dark', label: 'Dark', icon: Moon },
+  { value: 'light', label: 'Light', icon: Sun },
+  { value: 'system', label: 'System', icon: Monitor },
+];
 
 export function SettingsModal() {
   const toggleSettings = useUIStore((s) => s.toggleSettings);
   const turboMode = useUIStore((s) => s.turboMode);
   const haptics = useUIStore((s) => s.haptics);
+  const theme = useUIStore((s) => s.theme);
   const toggleTurbo = useUIStore((s) => s.toggleTurbo);
   const toggleHaptics = useUIStore((s) => s.toggleHaptics);
+  const setTheme = useUIStore((s) => s.setTheme);
   const resetData = useGameStore((s) => s.resetData);
   const setView = useUIStore((s) => s.setView);
 
@@ -22,58 +30,79 @@ export function SettingsModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={toggleSettings}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center tb-overlay p-4" onClick={toggleSettings}>
       <div
-        className="bg-card-bg border border-card-border rounded-2xl p-6 w-full max-w-sm animate-pop-in"
+        className="tb-card border tb-border rounded-2xl p-6 w-full max-w-sm animate-pop-in card-elevated"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-black">SETTINGS</h2>
-          <button onClick={toggleSettings} className="p-2 hover:bg-slate-800 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center">
-            <X size={20} />
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-black tb-text">SETTINGS</h2>
+          <button onClick={toggleSettings} className="p-2 hover:bg-[var(--tb-hover)] rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center tb-text-secondary">
+            <X size={18} />
           </button>
         </div>
 
         <div className="space-y-4">
+          {/* Theme */}
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.15em] tb-text-muted font-bold mb-2">Theme</div>
+            <div className="grid grid-cols-3 gap-1.5">
+              {THEME_OPTIONS.map(({ value, label, icon: Icon }) => (
+                <button
+                  key={value}
+                  onClick={() => setTheme(value)}
+                  className={`
+                    flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all border
+                    ${theme === value
+                      ? 'bg-accent-green/10 border-accent-green tb-green-text'
+                      : 'tb-card tb-border tb-text-secondary hover:bg-[var(--tb-hover)]'
+                    }
+                  `}
+                >
+                  <Icon size={14} />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Turbo Mode */}
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-bold text-sm">Turbo Mode</div>
-              <div className="text-xs text-slate-400">Faster dice rolling</div>
+              <div className="font-bold text-xs tb-text">Turbo Mode</div>
+              <div className="text-[10px] tb-text-muted">Faster dice rolling</div>
             </div>
             <button
               onClick={toggleTurbo}
-              className={`w-12 h-7 rounded-full transition-colors relative ${turboMode ? 'bg-accent-green' : 'bg-slate-600'}`}
+              className={`w-10 h-6 rounded-full transition-colors relative ${turboMode ? 'bg-accent-green' : 'bg-[var(--tb-border)]'}`}
             >
-              <div className={`w-5 h-5 bg-white rounded-full absolute top-1 transition-transform ${turboMode ? 'translate-x-6' : 'translate-x-1'}`} />
+              <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${turboMode ? 'translate-x-5' : 'translate-x-1'}`} />
             </button>
           </div>
 
           {/* Haptics */}
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-bold text-sm">Haptics</div>
-              <div className="text-xs text-slate-400">Vibration feedback</div>
+              <div className="font-bold text-xs tb-text">Haptics</div>
+              <div className="text-[10px] tb-text-muted">Vibration feedback</div>
             </div>
             <button
               onClick={toggleHaptics}
-              className={`w-12 h-7 rounded-full transition-colors relative ${haptics ? 'bg-accent-green' : 'bg-slate-600'}`}
+              className={`w-10 h-6 rounded-full transition-colors relative ${haptics ? 'bg-accent-green' : 'bg-[var(--tb-border)]'}`}
             >
-              <div className={`w-5 h-5 bg-white rounded-full absolute top-1 transition-transform ${haptics ? 'translate-x-6' : 'translate-x-1'}`} />
+              <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${haptics ? 'translate-x-5' : 'translate-x-1'}`} />
             </button>
           </div>
 
-          {/* Support */}
-          <div className="pt-4 border-t border-card-border">
-            <div className="text-xs text-slate-500 text-center mb-3">
+          <div className="pt-3 border-t tb-border">
+            <div className="text-[10px] tb-text-muted text-center mb-3">
               Support: tickrboom@example.com
             </div>
           </div>
 
-          {/* Reset */}
           <button
             onClick={handleReset}
-            className="w-full py-3 rounded-lg bg-red-900/30 border border-red-700 text-danger-red font-bold text-sm hover:bg-red-900/50 min-h-[48px] transition-colors"
+            className="w-full py-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-danger-red font-bold text-xs hover:bg-red-500/20 min-h-[44px] transition-colors"
           >
             RESET ALL DATA
           </button>

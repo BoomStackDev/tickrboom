@@ -5,7 +5,13 @@
   --color-card-bg: #1A1A1A;
   --color-card-border: #333333;
   --color-accent-green: #00FF87;
+  --color-accent-green-dark: #00CC6A;
+  --color-accent-green-text: #00A855;
   --color-danger-red: #FF4B4B;
+  --color-light-bg: #F5F5F0;
+  --color-light-card: #FFFFFF;
+  --color-light-border: #E0E0DA;
+  --color-light-text: #0A0A0A;
 
   --font-montserrat: "Montserrat", sans-serif;
   --font-mono: "Roboto Mono", monospace;
@@ -15,7 +21,10 @@
   --animate-flash-white: flash-white 0.4s ease-in-out;
   --animate-firework-burst: firework-burst 0.8s ease-out forwards;
   --animate-pop-in: pop-in 0.3s ease-out forwards;
+  --animate-badge-pulse: badge-pulse 2s ease-in-out infinite;
 }
+
+/* ── Keyframes ── */
 
 @keyframes scroll-left {
   0% { transform: translateX(0); }
@@ -54,6 +63,11 @@
   100% { transform: rotateX(0deg); }
 }
 
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 .animate-die-flip {
   animation: die-flip 0.15s ease-in-out;
 }
@@ -62,8 +76,87 @@
   animation: die-flip 0.4s ease-in-out;
 }
 
+/* ── Dark theme (default) ── */
+
 body {
-  background-color: #121212;
-  color: white;
   overflow-x: hidden;
+}
+
+:root {
+  --tb-bg: #121212;
+  --tb-card: #1A1A1A;
+  --tb-border: #333333;
+  --tb-text: #FFFFFF;
+  --tb-text-secondary: #94a3b8;
+  --tb-text-muted: #64748b;
+  --tb-input-bg: #222222;
+  --tb-hover: #2a2a2a;
+  --tb-green: #00FF87;
+  --tb-green-text: #00FF87;
+  --tb-red: #FF4B4B;
+  --tb-overlay: rgba(0,0,0,0.85);
+}
+
+.dark {
+  --tb-bg: #121212;
+  --tb-card: #1A1A1A;
+  --tb-border: #333333;
+  --tb-text: #FFFFFF;
+  --tb-text-secondary: #94a3b8;
+  --tb-text-muted: #64748b;
+  --tb-input-bg: #222222;
+  --tb-hover: #2a2a2a;
+  --tb-green: #00FF87;
+  --tb-green-text: #00FF87;
+  --tb-red: #FF4B4B;
+  --tb-overlay: rgba(0,0,0,0.85);
+}
+
+.light {
+  --tb-bg: #F5F5F0;
+  --tb-card: #FFFFFF;
+  --tb-border: #E0E0DA;
+  --tb-text: #0A0A0A;
+  --tb-text-secondary: #555555;
+  --tb-text-muted: #888888;
+  --tb-input-bg: #F0F0EA;
+  --tb-hover: #E8E8E2;
+  --tb-green: #00FF87;
+  --tb-green-text: #00A855;
+  --tb-red: #FF4B4B;
+  --tb-overlay: rgba(0,0,0,0.5);
+}
+
+/* ── Theme utility classes ── */
+
+.tb-bg { background-color: var(--tb-bg); }
+.tb-card { background-color: var(--tb-card); }
+.tb-border { border-color: var(--tb-border); }
+.tb-text { color: var(--tb-text); }
+.tb-text-secondary { color: var(--tb-text-secondary); }
+.tb-text-muted { color: var(--tb-text-muted); }
+.tb-input { background-color: var(--tb-input-bg); color: var(--tb-text); }
+.tb-green-text { color: var(--tb-green-text); }
+.tb-overlay { background-color: var(--tb-overlay); }
+
+/* ── Menu grid background ── */
+
+.menu-grid {
+  background-image:
+    linear-gradient(var(--tb-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tb-border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
+}
+
+.light .menu-grid {
+  background-image:
+    linear-gradient(#D8D8D0 1px, transparent 1px),
+    linear-gradient(90deg, #D8D8D0 1px, transparent 1px);
+}
+
+/* ── Light theme card shadow ── */
+
+.light .card-elevated {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
 }

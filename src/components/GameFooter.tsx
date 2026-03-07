@@ -12,34 +12,30 @@ export function GameFooter() {
   const autoSave = useGameStore((s) => s.autoSave);
   const haptic = useHaptics();
 
-  const handleMainMenu = () => {
-    haptic();
-    autoSave();
-    setView('MENU');
-  };
+  const handleMainMenu = () => { haptic(); autoSave(); setView('MENU'); };
 
   return (
-    <div className="flex gap-2 px-4 mt-4 mb-20 md:mb-8">
+    <div className="flex gap-1.5 px-3 lg:px-4 mt-3 mb-16 md:mb-6">
       <button
         onClick={() => { haptic(); openSaveManager('SAVE'); }}
-        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg bg-card-bg border border-card-border text-slate-300 hover:bg-slate-800 font-bold text-sm min-h-[48px] transition-colors"
+        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg tb-card border tb-border tb-text-secondary hover:bg-[var(--tb-hover)] font-bold text-xs min-h-[40px] transition-colors"
       >
-        <Save size={16} />
-        SAVE
+        <Save size={13} />
+        Save
       </button>
       <button
         onClick={handleMainMenu}
-        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg bg-card-bg border border-card-border text-slate-300 hover:bg-slate-800 font-bold text-sm min-h-[48px] transition-colors"
+        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg tb-card border tb-border tb-text-secondary hover:bg-[var(--tb-hover)] font-bold text-xs min-h-[40px] transition-colors"
       >
-        <RotateCcw size={16} />
-        MENU
+        <RotateCcw size={13} />
+        Menu
       </button>
       <button
         onClick={() => { haptic(); toggleSettings(); }}
-        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg bg-card-bg border border-card-border text-slate-300 hover:bg-slate-800 font-bold text-sm min-h-[48px] transition-colors"
+        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg tb-card border tb-border tb-text-secondary hover:bg-[var(--tb-hover)] font-bold text-xs min-h-[40px] transition-colors"
       >
-        <Settings size={16} />
-        SETTINGS
+        <Settings size={13} />
+        Settings
       </button>
     </div>
   );
