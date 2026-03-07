@@ -83,18 +83,19 @@ export function GameHeader() {
     return `$${dollars.toFixed(2)}`;
   };
 
-  const rollButton = (
+  const rollDisabled = isRolling || gameState.gameWon || !!useUIStore.getState().activeEvent;
+  const rollColorClass = isRolling
+    ? 'bg-[var(--tb-border)] tb-text-muted cursor-not-allowed'
+    : 'bg-accent-green text-black hover:brightness-110 active:scale-95';
+
+  const mobileRollButton = (
     <button
       onClick={handleRoll}
-      disabled={isRolling || gameState.gameWon || !!useUIStore.getState().activeEvent}
+      disabled={rollDisabled}
       className={`
         flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm
         min-h-[48px] min-w-[110px] justify-center
-        transition-all duration-200
-        ${isRolling
-          ? 'bg-[var(--tb-border)] tb-text-muted cursor-not-allowed'
-          : 'bg-accent-green text-black hover:brightness-110 active:scale-95'
-        }
+        transition-all duration-200 ${rollColorClass}
       `}
     >
       <Dice5 size={18} />
@@ -102,40 +103,55 @@ export function GameHeader() {
     </button>
   );
 
+  const desktopRollButton = (
+    <button
+      onClick={handleRoll}
+      disabled={rollDisabled}
+      className={`
+        flex flex-col items-center justify-center gap-0.5 w-16 py-3 rounded-xl font-black text-xs
+        min-h-[48px] px-0
+        transition-all duration-200 ${rollColorClass}
+      `}
+    >
+      <Dice5 className="w-5 h-5" />
+      {isRolling ? '...' : 'ROLL'}
+    </button>
+  );
+
   return (
     <div className="sticky top-0 z-40 tb-bg backdrop-blur-sm border-b tb-border" style={{ backgroundColor: 'var(--tb-bg)', opacity: 0.98 }}>
 
       {/* ── Desktop: single compact bar ── */}
-      <div className="hidden lg:flex items-center gap-3 px-6 py-2">
+      <div className="hidden lg:flex lg:items-center gap-3 px-6 py-2">
         {/* Logo + player */}
-        <div className="flex items-center gap-1.5 flex-none">
-          <TrendingUp size={16} className="tb-green-text" />
-          <span className="font-black text-base tb-text">TICKRBOOM</span>
-          <span className="text-[10px] tb-text-muted font-[family-name:var(--font-mono)] ml-1">
+        <div className="flex items-center gap-2 flex-none">
+          <TrendingUp className="w-6 h-6 tb-green-text" />
+          <span className="font-black text-2xl tb-text">TICKRBOOM</span>
+          <span className="text-sm tb-text-muted font-[family-name:var(--font-mono)] ml-1">
             {gameState.player.name} &middot; {gameState.player.difficultyMult}x
           </span>
         </div>
 
         {/* Stats */}
-        <div className="flex gap-1.5 flex-1 min-w-0">
-          <div className="tb-card border tb-border rounded-lg px-3 py-1 text-center card-elevated flex-1">
-            <div className="text-[9px] tb-text-muted uppercase tracking-wider">Net Worth</div>
-            <div className="font-[family-name:var(--font-mono)] font-bold tb-green-text text-sm">{formatMoney(netWorth)}</div>
+        <div className="flex gap-3 flex-1 min-w-0 items-center justify-center">
+          <div className="tb-card border tb-border rounded-lg px-3 py-3 text-center card-elevated w-32 flex-none">
+            <div className="text-[10px] tb-text-muted uppercase tracking-wider">Net Worth</div>
+            <div className="font-[family-name:var(--font-mono)] font-bold tb-green-text text-base">{formatMoney(netWorth)}</div>
           </div>
-          <div className="tb-card border tb-border rounded-lg px-3 py-1 text-center card-elevated flex-1">
-            <div className="text-[9px] tb-text-muted uppercase tracking-wider">Cash</div>
-            <div className="font-[family-name:var(--font-mono)] font-bold tb-text text-sm">{formatMoney(gameState.player.money)}</div>
+          <div className="tb-card border tb-border rounded-lg px-3 py-3 text-center card-elevated w-32 flex-none">
+            <div className="text-[10px] tb-text-muted uppercase tracking-wider">Cash</div>
+            <div className="font-[family-name:var(--font-mono)] font-bold tb-text text-base">{formatMoney(gameState.player.money)}</div>
           </div>
-          <div className="tb-card border tb-border rounded-lg px-3 py-1 text-center card-elevated flex-1">
-            <div className="text-[9px] tb-text-muted uppercase tracking-wider">Score</div>
-            <div className="font-[family-name:var(--font-mono)] font-bold text-yellow-400 text-sm">{formatMoney(score)}</div>
+          <div className="tb-card border tb-border rounded-lg px-3 py-3 text-center card-elevated w-32 flex-none">
+            <div className="text-[10px] tb-text-muted uppercase tracking-wider">Score</div>
+            <div className="font-[family-name:var(--font-mono)] font-bold text-yellow-400 text-base">{formatMoney(score)}</div>
           </div>
         </div>
 
         {/* Dice + Roll */}
         <div className="flex items-center gap-3 flex-none">
           <DiceDisplay />
-          {rollButton}
+          {desktopRollButton}
         </div>
       </div>
 
@@ -191,7 +207,7 @@ export function GameHeader() {
           <div className="flex-1">
             <DiceDisplay />
           </div>
-          {rollButton}
+          {mobileRollButton}
         </div>
       </div>
     </div>
