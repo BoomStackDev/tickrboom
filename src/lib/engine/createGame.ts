@@ -1,5 +1,5 @@
 import type { GameState, GameConfig, DicePlaceholder } from './types';
-import { DEFAULT_STOCKS } from './constants';
+import { DEFAULT_STOCKS, SPRINT_ROLLS, TIMED_DURATION } from './constants';
 
 export function createNewGame(config: GameConfig): GameState {
   const stockNames = config.stockNames && config.stockNames.length === 6
@@ -19,6 +19,8 @@ export function createNewGame(config: GameConfig): GameState {
   }
 
   const dice: DicePlaceholder = { stock: '?', action: '?', amount: '?' };
+  const today = new Date().toISOString().split('T')[0];
+  const gameMode = config.gameMode;
 
   return {
     player: {
@@ -34,6 +36,7 @@ export function createNewGame(config: GameConfig): GameState {
     dice,
     logs: [],
     gameWon: false,
+    gameLost: false,
     tutorialFlags: {
       split: false,
       crash: false,
@@ -41,5 +44,11 @@ export function createNewGame(config: GameConfig): GameState {
       divSkipped: false,
     },
     tradeAmounts,
+    gameMode,
+    rollCount: 0,
+    maxRolls: gameMode === 'sprint' ? (SPRINT_ROLLS[config.mode.id] ?? 100) : null,
+    timeRemaining: gameMode === 'timed' ? TIMED_DURATION : null,
+    challengeDate: gameMode === 'challenge' ? today : null,
+    rollIndex: 0,
   };
 }

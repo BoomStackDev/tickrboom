@@ -7,9 +7,11 @@ import { StockCard } from './StockCard';
 import { NotificationBanner } from './NotificationBanner';
 import { MarketLog } from './MarketLog';
 import { GameFooter } from './GameFooter';
+import { GameOverModal } from './modals/GameOverModal';
 
 export function GameBoard() {
   const stockNames = useGameStore((s) => s.gameState?.stockNames ?? []);
+  const gameLost = useGameStore((s) => s.gameState?.gameLost ?? false);
   const isShaking = useUIStore((s) => s.isShaking);
   const isFlashing = useUIStore((s) => s.isFlashing);
 
@@ -28,6 +30,7 @@ export function GameBoard() {
 
       <MarketLog />
       <GameFooter />
+      {gameLost && <GameOverModal />}
     </div>
   );
 }

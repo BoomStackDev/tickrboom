@@ -1,3 +1,5 @@
+export type GameMode = 'freeplay' | 'sprint' | 'timed' | 'challenge';
+
 export interface Player {
   name: string;
   money: number; // in cents (100 = $1.00)
@@ -44,8 +46,15 @@ export interface GameState {
   dice: DiceResult | DicePlaceholder;
   logs: string[];
   gameWon: boolean;
+  gameLost: boolean;
   tutorialFlags: TutorialFlags;
   tradeAmounts: Record<string, number | 'MAX'>;
+  gameMode: GameMode;
+  rollCount: number;
+  maxRolls: number | null;
+  timeRemaining: number | null;
+  challengeDate: string | null;
+  rollIndex: number;
 }
 
 export interface RollOutcome {
@@ -68,6 +77,7 @@ export interface GameConfig {
   mode: StartMode;
   playerName: string;
   stockNames?: string[];
+  gameMode: GameMode;
 }
 
 export interface TradeAction {
@@ -83,6 +93,7 @@ export interface SaveFile {
   netWorth: number;
   data: GameState;
   mode: StartMode;
+  gameMode: GameMode;
 }
 
 export interface TickerItem {

@@ -15,6 +15,8 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
     logs: [...state.logs],
     tutorialFlags: { ...state.tutorialFlags },
     dice,
+    rollCount: state.rollCount + 1,
+    rollIndex: state.rollIndex + 1,
   };
 
   const player = newState.player;
@@ -125,6 +127,13 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
   if (score >= WINNING_SCORE && !player.hasWon) {
     player.hasWon = true;
     newState.gameWon = true;
+  }
+
+  // Sprint end condition: out of rolls without winning
+  if (newState.gameMode === 'sprint' && newState.maxRolls !== null) {
+    if (newState.rollCount >= newState.maxRolls && !newState.gameWon) {
+      newState.gameLost = true;
+    }
   }
 
   return { newState, event, notification, log };

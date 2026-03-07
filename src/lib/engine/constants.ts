@@ -39,6 +39,21 @@ export const START_MODES: StartMode[] = [
   },
 ];
 
+export const SPRINT_ROLLS: Record<string, number> = {
+  hard: 50,
+  normal: 100,
+  easy: 150,
+};
+
+export const TIMED_DURATION = 300; // 5 minutes in seconds
+
+export const GAME_MODES = [
+  { id: 'freeplay', label: 'Free Play', desc: 'No limits. Race to $1 Billion.' },
+  { id: 'sprint', label: 'Sprint', desc: 'Hard: 50 rolls · Normal: 100 · Easy: 150' },
+  { id: 'timed', label: 'Timed', desc: '5 minutes. Turbo disabled.' },
+  { id: 'challenge', label: 'Daily', desc: 'Same rolls for everyone. Once per day.' },
+] as const;
+
 export const TICKER_DATA: TickerItem[] = [
   { sym: 'GOLD', val: '1,840.50', dir: 'up' },
   { sym: 'OIL', val: '75.20', dir: 'down' },

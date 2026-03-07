@@ -5,18 +5,21 @@ import { TrendingUp, Trophy, Edit3 } from 'lucide-react';
 import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useHaptics } from '@/hooks/useHaptics';
-import { START_MODES, DEFAULT_STOCKS } from '@/lib/engine/constants';
-import type { GameState, StartMode } from '@/lib/engine/types';
+import { START_MODES, DEFAULT_STOCKS, GAME_MODES } from '@/lib/engine/constants';
+import type { GameState, GameMode, StartMode } from '@/lib/engine/types';
 import { TickerFooter } from './TickerFooter';
 
 export function MainMenu() {
   const selectedMode = useGameStore((s) => s.selectedMode);
   const setSelectedMode = useGameStore((s) => s.setSelectedMode);
+  const selectedGameMode = useGameStore((s) => s.selectedGameMode);
+  const setSelectedGameMode = useGameStore((s) => s.setSelectedGameMode);
   const newGame = useGameStore((s) => s.newGame);
   const highScore = useGameStore((s) => s.highScore);
   const hasAutoSave = useGameStore((s) => s.hasAutoSave);
   const loadAutoSave = useGameStore((s) => s.loadAutoSave);
   const loadGame = useGameStore((s) => s.loadGame);
+  const hasPlayedChallenge = useGameStore((s) => s.hasPlayedChallenge);
 
   const setupName = useUIStore((s) => s.setupName);
   const setSetupName = useUIStore((s) => s.setSetupName);
@@ -32,7 +35,11 @@ export function MainMenu() {
   const [editingStocks, setEditingStocks] = useState(false);
   const [customStocks, setCustomStocks] = useState<string[]>([...DEFAULT_STOCKS]);
 
+  const challengePlayed = hasPlayedChallenge();
+  const newGameDisabled = selectedGameMode === 'challenge' && challengePlayed;
+
   const handleNewGame = () => {
+    if (newGameDisabled) return;
     haptic([50, 30, 50]);
     setShaking(true);
     setFlashing(true);
@@ -43,6 +50,7 @@ export function MainMenu() {
         mode: selectedMode,
         playerName: setupName,
         stockNames: customStocks,
+        gameMode: selectedGameMode,
       });
       setView('GAME');
     }, 400);
@@ -65,6 +73,17 @@ export function MainMenu() {
     if (dollars >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(2)}M`;
     if (dollars >= 1_000) return `$${(dollars / 1_000).toFixed(1)}k`;
     return `$${dollars.toFixed(2)}`;
+  };
+
+  const modeContextLine = () => {
+    if (selectedGameMode === 'sprint') return 'Hard: 50 rolls \u00b7 Normal: 100 \u00b7 Easy: 150';
+    if (selectedGameMode === 'timed') return 'Turbo mode will be disabled';
+    if (selectedGameMode === 'challenge') {
+      return challengePlayed
+        ? '\u2713 Played today \u2014 come back tomorrow'
+        : 'New challenge available!';
+    }
+    return null;
   };
 
   return (
@@ -108,8 +127,44 @@ export function MainMenu() {
           />
         </div>
 
-        {/* Difficulty selector */}
+        {/* Game mode selector */}
         <div className="w-full mb-5">
+          <label className="text-[10px] uppercase tracking-[0.15em] tb-text-muted font-bold block mb-1.5">
+            Game Mode
+          </label>
+          <div className="grid grid-cols-4 gap-1.5">
+            {GAME_MODES.map((gm) => (
+              <button
+                key={gm.id}
+                onClick={() => { haptic(); setSelectedGameMode(gm.id as GameMode); }}
+                className={`
+                  py-2.5 rounded-lg font-bold text-center transition-all min-h-[48px] border
+                  ${selectedGameMode === gm.id
+                    ? 'bg-accent-green/10 border-accent-green tb-green-text shadow-[0_0_12px_rgba(0,255,135,0.15)]'
+                    : 'tb-card tb-border hover:border-[var(--tb-text-muted)]'
+                  }
+                `}
+              >
+                <div className={`text-xs font-black ${selectedGameMode === gm.id ? 'tb-green-text' : 'tb-text'}`}>
+                  {gm.label}
+                </div>
+                <div className={`text-[8px] leading-tight mt-0.5 ${selectedGameMode === gm.id ? 'tb-green-text opacity-70' : 'tb-text-muted'}`}>
+                  {gm.desc}
+                </div>
+              </button>
+            ))}
+          </div>
+          {modeContextLine() && (
+            <p className={`text-[11px] mt-2 text-center ${
+              selectedGameMode === 'challenge' && challengePlayed ? 'text-yellow-400' : 'tb-text-muted'
+            }`}>
+              {modeContextLine()}
+            </p>
+          )}
+        </div>
+
+        {/* Difficulty selector */}
+        <div className={`w-full mb-5 ${selectedGameMode === 'challenge' ? 'opacity-50 pointer-events-none' : ''}`}>
           <label className="text-[10px] uppercase tracking-[0.15em] tb-text-muted font-bold block mb-1.5">
             Starting Cash
           </label>
@@ -170,7 +225,8 @@ export function MainMenu() {
         <div className="w-full space-y-2.5">
           <button
             onClick={handleNewGame}
-            className="w-full py-3.5 rounded-xl bg-accent-green text-black font-black text-base hover:brightness-110 active:scale-[0.98] transition-all min-h-[52px] tracking-wide"
+            disabled={newGameDisabled}
+            className="w-full py-3.5 rounded-xl bg-accent-green text-black font-black text-base hover:brightness-110 active:scale-[0.98] transition-all min-h-[52px] tracking-wide disabled:opacity-30 disabled:cursor-not-allowed"
           >
             NEW GAME
           </button>

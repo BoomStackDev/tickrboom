@@ -5,7 +5,7 @@ import { TrendingUp, Dice5 } from 'lucide-react';
 import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useHaptics } from '@/hooks/useHaptics';
-import { WINNING_SCORE, ACTIONS, AMOUNTS } from '@/lib/engine/constants';
+import { WINNING_SCORE, TIMED_DURATION, ACTIONS, AMOUNTS } from '@/lib/engine/constants';
 import { DiceDisplay } from './DiceDisplay';
 import { calculateNetWorth } from '@/lib/engine/netWorth';
 
@@ -24,7 +24,7 @@ export function GameHeader() {
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleRoll = useCallback(() => {
-    if (isRolling || !gameState || gameState.gameWon) return;
+    if (isRolling || !gameState || gameState.gameWon || gameState.gameLost) return;
     const activeEvent = useUIStore.getState().activeEvent;
     if (activeEvent) return;
 
@@ -83,7 +83,63 @@ export function GameHeader() {
     return `$${dollars.toFixed(2)}`;
   };
 
-  const rollDisabled = isRolling || gameState.gameWon || !!useUIStore.getState().activeEvent;
+  // Mode-aware progress bar content
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const renderProgressBar = () => {
+    if (gameState.gameMode === 'sprint') {
+      const rollPct = gameState.maxRolls ? (gameState.rollCount / gameState.maxRolls) * 100 : 0;
+      return (
+        <>
+          <div className="flex justify-between text-[9px] tb-text-muted mb-0.5">
+            <span>SPRINT</span>
+            <span>{gameState.rollCount} / {gameState.maxRolls} ROLLS</span>
+          </div>
+          <div className="w-full h-[2px] bg-[var(--tb-border)] rounded-full overflow-hidden">
+            <div className="h-full bg-accent-green rounded-full transition-all duration-300" style={{ width: `${rollPct}%` }} />
+          </div>
+        </>
+      );
+    }
+    if (gameState.gameMode === 'timed') {
+      const remaining = gameState.timeRemaining ?? 0;
+      const timerColorClass = remaining <= 30
+        ? 'text-danger-red animate-pulse'
+        : remaining <= 60
+        ? 'text-yellow-400'
+        : 'tb-text-muted';
+      const timePct = (remaining / TIMED_DURATION) * 100;
+      return (
+        <>
+          <div className="flex justify-between text-[9px] mb-0.5">
+            <span className="tb-text-muted">TIMED</span>
+            <span className={timerColorClass}>{formatTime(remaining)}</span>
+          </div>
+          <div className="w-full h-[2px] bg-[var(--tb-border)] rounded-full overflow-hidden">
+            <div className="h-full bg-accent-green rounded-full transition-all duration-1000" style={{ width: `${timePct}%` }} />
+          </div>
+        </>
+      );
+    }
+    // freeplay + challenge: default $1B goal
+    return (
+      <>
+        <div className="flex justify-between text-[9px] tb-text-muted mb-0.5">
+          <span>GOAL: $1B</span>
+          <span>{goalProgress.toFixed(1)}%</span>
+        </div>
+        <div className="w-full h-[2px] bg-[var(--tb-border)] rounded-full overflow-hidden">
+          <div className="h-full bg-accent-green rounded-full transition-all duration-500" style={{ width: `${goalProgress}%` }} />
+        </div>
+      </>
+    );
+  };
+
+  const rollDisabled = isRolling || gameState.gameWon || gameState.gameLost || !!useUIStore.getState().activeEvent;
   const rollColorClass = isRolling
     ? 'bg-[var(--tb-border)] tb-text-muted cursor-not-allowed'
     : 'bg-accent-green text-black hover:brightness-110 active:scale-95';
@@ -157,9 +213,7 @@ export function GameHeader() {
 
       {/* Desktop: progress bar */}
       <div className="hidden lg:block px-6 pb-1.5">
-        <div className="w-full h-[2px] bg-[var(--tb-border)] rounded-full overflow-hidden">
-          <div className="h-full bg-accent-green rounded-full transition-all duration-500" style={{ width: `${goalProgress}%` }} />
-        </div>
+        {renderProgressBar()}
       </div>
 
       {/* ── Mobile: stacked layout ── */}
@@ -193,13 +247,7 @@ export function GameHeader() {
 
         {/* Goal progress */}
         <div className="px-4 mb-2">
-          <div className="flex justify-between text-[9px] tb-text-muted mb-0.5">
-            <span>GOAL: $1B</span>
-            <span>{goalProgress.toFixed(1)}%</span>
-          </div>
-          <div className="w-full h-[2px] bg-[var(--tb-border)] rounded-full overflow-hidden">
-            <div className="h-full bg-accent-green rounded-full transition-all duration-500" style={{ width: `${goalProgress}%` }} />
-          </div>
+          {renderProgressBar()}
         </div>
 
         {/* Dice + Roll button */}
