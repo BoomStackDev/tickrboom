@@ -21,7 +21,7 @@ export function GameBoard() {
       <NotificationBanner />
 
       {/* Stock cards grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 px-4 mt-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-2 px-4 mt-3">
         {stockNames.map((stock) => (
           <StockCard key={stock} stock={stock} />
         ))}

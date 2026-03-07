@@ -75,6 +75,7 @@ export function MainMenu() {
 
   return (
     <div className="min-h-screen bg-dark-bg flex flex-col items-center justify-center px-4 pb-16">
+      <div className="w-full max-w-md lg:max-w-lg">
       {/* Logo */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-2">
@@ -98,7 +99,7 @@ export function MainMenu() {
       )}
 
       {/* Name input */}
-      <div className="w-full max-w-sm mb-4">
+      <div className="w-full mb-4">
         <div className="flex items-center gap-2 mb-2">
           <User size={14} className="text-slate-400" />
           <span className="text-xs text-slate-400 uppercase font-bold">Player Name</span>
@@ -112,7 +113,7 @@ export function MainMenu() {
       </div>
 
       {/* Difficulty selector */}
-      <div className="w-full max-w-sm mb-4">
+      <div className="w-full mb-4">
         <div className="flex items-center gap-2 mb-2">
           <Wallet size={14} className="text-slate-400" />
           <span className="text-xs text-slate-400 uppercase font-bold">Starting Cash</span>
@@ -141,7 +142,7 @@ export function MainMenu() {
       </div>
 
       {/* Custom commodities */}
-      <div className="w-full max-w-sm mb-6">
+      <div className="w-full mb-6">
         <button
           onClick={() => setEditingStocks(!editingStocks)}
           className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-300 mb-2"
@@ -169,7 +170,7 @@ export function MainMenu() {
       </div>
 
       {/* Action buttons */}
-      <div className="w-full max-w-sm space-y-3">
+      <div className="w-full space-y-3">
         <button
           onClick={handleNewGame}
           className="w-full py-4 rounded-xl bg-accent-green text-black font-black text-lg hover:brightness-110 active:scale-[0.98] transition-all min-h-[56px]"
@@ -209,6 +210,7 @@ export function MainMenu() {
         </div>
       </div>
 
+      </div>
       <TickerFooter />
     </div>
   );

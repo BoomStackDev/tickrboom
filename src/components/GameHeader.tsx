@@ -94,9 +94,9 @@ export function GameHeader() {
   };
 
   return (
-    <div className="sticky top-0 z-40 bg-dark-bg/95 backdrop-blur-sm border-b border-card-border pb-3">
+    <div className="sticky top-0 z-40 bg-dark-bg/95 backdrop-blur-sm border-b border-card-border pb-3 lg:pb-2">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 pt-3 mb-2">
+      <div className="flex items-center justify-between px-4 pt-3 lg:pt-2 mb-2 lg:mb-1">
         <div className="flex items-center gap-2">
           <TrendingUp size={20} className="text-accent-green" />
           <span className="font-black text-base md:text-lg">TICKRBOOM</span>
@@ -110,7 +110,7 @@ export function GameHeader() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-2 px-4 mb-3">
+      <div className="grid grid-cols-3 gap-2 px-4 mb-3 lg:mb-2">
         <div className="bg-card-bg border border-card-border rounded-lg px-2 py-1.5 text-center">
           <div className="text-[10px] text-slate-400 uppercase">Net Worth</div>
           <div className="font-[family-name:var(--font-mono)] font-bold text-accent-green text-sm md:text-base">
@@ -132,7 +132,7 @@ export function GameHeader() {
       </div>
 
       {/* Goal progress */}
-      <div className="px-4 mb-3">
+      <div className="px-4 mb-3 lg:mb-2">
         <div className="flex justify-between text-[10px] text-slate-400 mb-1">
           <span>GOAL: $1 BILLION</span>
           <span>{goalProgress.toFixed(1)}%</span>

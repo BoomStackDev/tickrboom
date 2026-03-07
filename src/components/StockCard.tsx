@@ -59,22 +59,22 @@ export function StockCard({ stock }: StockCardProps) {
   const pnl = shares > 0 ? (price - avgCost) * shares : 0;
 
   return (
-    <div className="bg-card-bg border border-card-border rounded-xl p-3 md:p-4">
+    <div className="bg-card-bg border border-card-border rounded-xl p-3 lg:p-2.5">
       {/* Header */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-1.5 lg:mb-1">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-white text-sm md:text-base">{stock}</span>
+          <span className="font-bold text-white text-sm lg:text-xs">{stock}</span>
           <span className={`text-[10px] px-1.5 py-0.5 rounded border font-bold ${status.color}`}>
             {status.label}
           </span>
         </div>
-        <span className="font-[family-name:var(--font-mono)] font-bold text-white text-sm md:text-base">
+        <span className="font-[family-name:var(--font-mono)] font-bold text-white text-sm lg:text-xs">
           ${(price / 100).toFixed(2)}
         </span>
       </div>
 
       {/* Price bar */}
-      <div className="w-full h-1.5 bg-slate-800 rounded-full mb-3 overflow-hidden">
+      <div className="w-full h-1.5 bg-slate-800 rounded-full mb-2 lg:mb-1.5 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-300 ${
             price <= 25 ? 'bg-danger-red' :
@@ -86,7 +86,7 @@ export function StockCard({ stock }: StockCardProps) {
       </div>
 
       {/* Position info */}
-      <div className="grid grid-cols-3 gap-2 mb-3 text-xs font-[family-name:var(--font-mono)]">
+      <div className="grid grid-cols-3 gap-2 mb-2 lg:mb-1.5 text-xs font-[family-name:var(--font-mono)]">
         <div>
           <span className="text-slate-500 block">Shares</span>
           <span className="text-white font-bold">{shares.toLocaleString()}</span>
@@ -106,14 +106,14 @@ export function StockCard({ stock }: StockCardProps) {
       </div>
 
       {/* Trade amount buttons */}
-      <div className="flex gap-1 mb-2 flex-wrap">
+      <div className="flex gap-1 mb-2 lg:mb-1.5 flex-wrap">
         {increments.map((inc) => (
           <button
             key={inc}
             onClick={() => { haptic(); setTradeAmount(stock, inc); }}
             className={`
-              px-2 py-1.5 rounded text-xs font-[family-name:var(--font-mono)] font-bold
-              min-w-[44px] min-h-[44px] md:min-h-0 md:py-1
+              px-2 py-1.5 lg:px-1.5 lg:py-0.5 rounded text-xs font-[family-name:var(--font-mono)] font-bold
+              min-w-[44px] min-h-[44px] lg:min-w-0 lg:min-h-0
               transition-colors
               ${tradeAmount === inc
                 ? 'bg-accent-green text-black'
@@ -127,8 +127,8 @@ export function StockCard({ stock }: StockCardProps) {
         <button
           onClick={() => { haptic(); setTradeAmount(stock, 'MAX'); }}
           className={`
-            px-2 py-1.5 rounded text-xs font-bold
-            min-w-[44px] min-h-[44px] md:min-h-0 md:py-1
+            px-2 py-1.5 lg:px-1.5 lg:py-0.5 rounded text-xs font-bold
+            min-w-[44px] min-h-[44px] lg:min-w-0 lg:min-h-0
             transition-colors
             ${tradeAmount === 'MAX'
               ? 'bg-accent-green text-black'
@@ -141,17 +141,17 @@ export function StockCard({ stock }: StockCardProps) {
       </div>
 
       {/* Custom amount input */}
-      <div className="flex gap-1 mb-2">
+      <div className="flex gap-1 mb-2 lg:mb-1.5">
         <input
           type="number"
           placeholder="Custom qty"
           value={customInput}
           onChange={(e) => setCustomInput(e.target.value)}
-          className="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs font-[family-name:var(--font-mono)] text-white min-h-[44px] md:min-h-0"
+          className="flex-1 bg-slate-800 border border-slate-600 rounded px-2 py-1.5 lg:py-0.5 text-xs font-[family-name:var(--font-mono)] text-white min-h-[44px] lg:min-h-0"
         />
         <button
           onClick={handleCustomAmount}
-          className="px-3 py-1.5 bg-slate-700 border border-slate-500 rounded text-xs font-bold text-white min-h-[44px] md:min-h-0 hover:bg-slate-600"
+          className="px-3 py-1.5 lg:py-0.5 bg-slate-700 border border-slate-500 rounded text-xs font-bold text-white min-h-[44px] lg:min-h-0 hover:bg-slate-600"
         >
           Set
         </button>
@@ -162,14 +162,14 @@ export function StockCard({ stock }: StockCardProps) {
         <button
           onClick={handleSell}
           disabled={shares <= 0 || isRolling}
-          className="py-2.5 rounded-lg font-bold text-sm bg-red-900/50 border border-red-700 text-danger-red hover:bg-red-900 disabled:opacity-30 disabled:cursor-not-allowed min-h-[44px] transition-colors"
+          className="py-2.5 lg:py-1.5 rounded-lg font-bold text-sm lg:text-xs bg-red-900/50 border border-red-700 text-danger-red hover:bg-red-900 disabled:opacity-30 disabled:cursor-not-allowed min-h-[44px] lg:min-h-0 transition-colors"
         >
           SELL
         </button>
         <button
           onClick={handleBuy}
           disabled={isRolling || (gameState?.player.money ?? 0) < price}
-          className="py-2.5 rounded-lg font-bold text-sm bg-emerald-900/50 border border-emerald-700 text-accent-green hover:bg-emerald-900 disabled:opacity-30 disabled:cursor-not-allowed min-h-[44px] transition-colors"
+          className="py-2.5 lg:py-1.5 rounded-lg font-bold text-sm lg:text-xs bg-emerald-900/50 border border-emerald-700 text-accent-green hover:bg-emerald-900 disabled:opacity-30 disabled:cursor-not-allowed min-h-[44px] lg:min-h-0 transition-colors"
         >
           BUY
         </button>
