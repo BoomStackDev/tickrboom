@@ -135,7 +135,7 @@ export function StockCard({ stock }: StockCardProps) {
           onChange={(e) => setCustomInput(e.target.value)}
           onBlur={handleCustomAmount}
           onKeyDown={(e) => { if (e.key === 'Enter') handleCustomAmount(); }}
-          className="flex-1 min-w-0 tb-input border tb-border rounded-lg px-2 text-[10px] font-[family-name:var(--font-mono)] h-10 lg:h-9 focus:outline-none focus:border-accent-green/50 text-center"
+          className="flex-1 min-w-0 tb-input border tb-border rounded-lg px-2 text-base font-[family-name:var(--font-mono)] h-10 lg:h-9 focus:outline-none focus:border-accent-green/50 text-center"
         />
         <button
           onClick={handleBuy}
