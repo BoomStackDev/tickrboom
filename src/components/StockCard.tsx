@@ -119,36 +119,28 @@ export function StockCard({ stock }: StockCardProps) {
         </button>
       </div>
 
-      {/* Custom amount input */}
-      <div className="flex gap-1 mb-1.5">
+      {/* SELL | qty input | BUY */}
+      <div className="flex gap-1.5">
+        <button
+          onClick={handleSell}
+          disabled={shares <= 0 || isRolling}
+          className="w-20 flex-none rounded-lg font-bold text-xs bg-red-500/10 border border-red-500/30 text-danger-red hover:bg-red-500/20 disabled:opacity-25 disabled:cursor-not-allowed h-10 lg:h-9 transition-colors"
+        >
+          SELL
+        </button>
         <input
           type="number"
           placeholder="Qty"
           value={customInput}
           onChange={(e) => setCustomInput(e.target.value)}
-          className="flex-1 tb-input border tb-border rounded px-2 py-1 text-[10px] font-[family-name:var(--font-mono)] min-h-[36px] lg:min-h-0 lg:py-0.5 focus:outline-none focus:border-accent-green/50"
+          onBlur={handleCustomAmount}
+          onKeyDown={(e) => { if (e.key === 'Enter') handleCustomAmount(); }}
+          className="flex-1 min-w-0 tb-input border tb-border rounded-lg px-2 text-[10px] font-[family-name:var(--font-mono)] h-10 lg:h-9 focus:outline-none focus:border-accent-green/50 text-center"
         />
-        <button
-          onClick={handleCustomAmount}
-          className="px-2 py-1 bg-[var(--tb-input-bg)] border tb-border rounded text-[10px] font-bold tb-text-secondary min-h-[36px] lg:min-h-0 lg:py-0.5 hover:bg-[var(--tb-hover)]"
-        >
-          Set
-        </button>
-      </div>
-
-      {/* Buy/Sell buttons */}
-      <div className="grid grid-cols-2 gap-1.5">
-        <button
-          onClick={handleSell}
-          disabled={shares <= 0 || isRolling}
-          className="py-2 lg:py-1.5 rounded-lg font-bold text-xs bg-red-500/10 border border-red-500/30 text-danger-red hover:bg-red-500/20 disabled:opacity-25 disabled:cursor-not-allowed min-h-[40px] lg:min-h-0 transition-colors"
-        >
-          SELL
-        </button>
         <button
           onClick={handleBuy}
           disabled={isRolling || (gameState?.player.money ?? 0) < price}
-          className="py-2 lg:py-1.5 rounded-lg font-bold text-xs bg-emerald-500/10 border border-emerald-500/30 tb-green-text hover:bg-emerald-500/20 disabled:opacity-25 disabled:cursor-not-allowed min-h-[40px] lg:min-h-0 transition-colors"
+          className="w-20 flex-none rounded-lg font-bold text-xs bg-emerald-500/10 border border-emerald-500/30 tb-green-text hover:bg-emerald-500/20 disabled:opacity-25 disabled:cursor-not-allowed h-10 lg:h-9 transition-colors"
         >
           BUY
         </button>
