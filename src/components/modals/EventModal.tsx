@@ -1,5 +1,6 @@
 'use client';
 
+import { createPortal } from 'react-dom';
 import { AlertTriangle, TrendingUp, Newspaper } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -23,8 +24,8 @@ export function EventModal() {
 
   const borderColor = activeEvent.type === 'danger' ? 'border-red-500' : activeEvent.type === 'profit' ? 'border-emerald-500' : 'border-blue-500';
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center tb-overlay p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[999] flex items-center justify-center tb-overlay p-4">
       <div className={`tb-card card-elevated border-2 ${borderColor} rounded-2xl p-6 w-full max-w-sm text-center animate-pop-in`}>
         {isBreaking && (
           <div className={`inline-block px-3 py-0.5 rounded-full text-[10px] font-black tracking-widest uppercase mb-3 ${
@@ -47,6 +48,7 @@ export function EventModal() {
           OK
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

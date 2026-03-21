@@ -11,11 +11,11 @@ function seededRandom(seed: string, index: number): number {
   return (h >>> 0) / 0xFFFFFFFF;
 }
 
-// Module-level shuffle bags for even distribution
+// Lazy-initialized shuffle bags — avoids Math.random() during SSR
 let stockBag: ShuffleBag<string> | null = null;
 let lastStockKey = '';
-const actionBag = new ShuffleBag<string>(ACTIONS);
-const amountBag = new ShuffleBag<number>(AMOUNTS);
+let actionBag: ShuffleBag<string> | null = null;
+let amountBag: ShuffleBag<number> | null = null;
 
 export function rollDice(
   stockNames: string[],
@@ -34,12 +34,14 @@ export function rollDice(
     };
   }
 
-  // Recreate stock bag if stock names changed
+  // Lazy-init bags on first use (client-side only)
   const stockKey = stockNames.join(',');
   if (!stockBag || stockKey !== lastStockKey) {
     stockBag = new ShuffleBag(stockNames);
     lastStockKey = stockKey;
   }
+  if (!actionBag) actionBag = new ShuffleBag<string>([...ACTIONS]);
+  if (!amountBag) amountBag = new ShuffleBag<number>([...AMOUNTS]);
 
   return {
     stock: stockBag.draw(),
