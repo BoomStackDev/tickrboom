@@ -1,7 +1,7 @@
 # TickrBoom — Changelog
 
 All notable changes to TickrBoom are recorded here.
-Format: `[version] — date — description`
+Format: [version] — date — description
 Commits are on GitHub: https://github.com/boomstackdev/tickrboom
 Live URL: https://tickrboom.boomstack.dev
 
@@ -27,8 +27,7 @@ Live URL: https://tickrboom.boomstack.dev
 
 ## [0.4.1] — 2026-03-21
 ### Fixed
-- EventModal now renders via React portal to document.body, fixing overlay z-index and
-  stacking context issues caused by parent transforms and backdrop-blur
+- EventModal now renders via React portal to document.body, fixing overlay z-index and stacking context issues caused by parent transforms and backdrop-blur
 - Shuffle bags lazy-initialized on first client-side use, fixing Next.js hydration error
 
 **Commits:** aceaed2
@@ -37,12 +36,9 @@ Live URL: https://tickrboom.boomstack.dev
 
 ## [0.4.0] — 2026-03-21 — Phase 3 Complete: Market Events & Gameplay Depth
 ### Added
-- Shuffle-bag randomizer: stocks, actions, and amounts now draw from a shuffled pool
-  using Fisher-Yates algorithm, preventing long streaks of the same result
-- Market Events system (events.ts): 13 weighted events across 3 categories fire every
-  5-8 rolls and affect commodity prices
-- Breaking News modal: EventModal updated with pill badge label and Newspaper icon for
-  market events, visually distinct from tutorial events
+- Shuffle-bag randomizer: stocks, actions, and amounts now draw from a shuffled pool using Fisher-Yates algorithm, preventing long streaks of the same result
+- Market Events system (events.ts): 13 weighted events across 3 categories fire every 5-8 rolls and affect commodity prices
+- Breaking News modal: EventModal updated with pill badge label and Newspaper icon for market events, visually distinct from tutorial events
 - Trade logging: buy and sell transactions now appear in the Market Activity feed
 - MAX_LOGS constant: activity log expanded from 50 to 250 entries for testing visibility
 
@@ -62,12 +58,16 @@ Live URL: https://tickrboom.boomstack.dev
 - Stock cards on desktop now have larger padding, text, and button sizes via lg: breakpoints
 - More vertical spacing between cards on desktop (gap-4 at lg:)
 
+**Commit:** pending
+
 ---
 
 ## [0.3.2] — 2026-03-07
 ### Fixed
 - iOS Safari auto-zoom when tapping qty input
 - Users could no longer get stuck zoomed in on mobile after tapping the quantity field
+
+**Commit:** ios zoom fix
 
 ---
 
@@ -76,6 +76,8 @@ Live URL: https://tickrboom.boomstack.dev
 - Stock card trade controls consolidated from 3 rows into 2 rows
 - Row 1: increment buttons (500, 1k, 2.5k, 5k, MAX)
 - Row 2: [SELL] [qty input] [BUY]
+
+**Commit:** b3efd97
 
 ---
 
@@ -89,6 +91,7 @@ Live URL: https://tickrboom.boomstack.dev
 - Menu screen: CSS grid background, large logo, terminal-style name input
 - Stock cards: pill-shaped status badges, SPLIT WATCH pulse animation
 
+**Commit:** b0b28b4
 **Bundle size:** 1.1MB client, well under 5MB limit
 
 ---
