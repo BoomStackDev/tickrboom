@@ -145,8 +145,6 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
       event = marketResult.event;
       newState.logs = [marketResult.log, ...newState.logs].slice(0, MAX_LOGS);
     }
-  } else {
-    console.log('[MarketEvent] skipped — tutorial event active this roll');
   }
 
   // Check win condition
