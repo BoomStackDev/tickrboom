@@ -7,6 +7,16 @@ Live URL: https://tickrboom.boomstack.dev
 
 ---
 
+## [0.4.3] — 2026-03-21
+### Changed
+- Renamed IND to INDUSTRIALS in default stock names for clarity
+- Added DICE_LABELS map: dice display uses short abbreviations (GOLD, SLVR, OIL, BNDS, IND, GRN) while full names appear everywhere else
+- Removed commodity customization feature — default stocks are now fixed
+
+**Commit:** f7c6865
+
+---
+
 ## [0.4.2] — 2026-03-21
 ### Fixed
 - Removed all debug console.log statements from processRoll.ts
