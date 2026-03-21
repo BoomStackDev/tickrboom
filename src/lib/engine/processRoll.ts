@@ -124,13 +124,29 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
 
   // Market event — only fires if no tutorial event this roll
   if (!event) {
+    const rc = newState.rollCount;
+    const ner = newState.nextEventRoll;
     const marketResult = tryMarketEvent(newState);
+    console.log('[MarketEvent]', {
+      rollCount: rc,
+      nextEventRoll: ner,
+      nextEventRollType: typeof ner,
+      fired: marketResult !== null,
+      skippedBecause: marketResult === null
+        ? ner === null ? 'nextEventRoll is null'
+        : ner === undefined ? 'nextEventRoll is undefined (not in state)'
+        : rc < ner ? `rollCount (${rc}) < nextEventRoll (${ner})`
+        : 'unknown'
+        : 'n/a — event fired',
+    });
     if (marketResult) {
       // Replace newState fields with the event-modified state
       Object.assign(newState, marketResult.newState);
       event = marketResult.event;
       newState.logs = [marketResult.log, ...newState.logs].slice(0, 50);
     }
+  } else {
+    console.log('[MarketEvent] skipped — tutorial event active this roll');
   }
 
   // Check win condition
