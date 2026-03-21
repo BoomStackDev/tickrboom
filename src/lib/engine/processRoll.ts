@@ -1,5 +1,5 @@
 import type { GameState, DiceResult, RollOutcome, GameEvent, Notification } from './types';
-import { SPLIT_VALUE, CRASH_VALUE, WINNING_SCORE } from './constants';
+import { SPLIT_VALUE, CRASH_VALUE, WINNING_SCORE, MAX_LOGS } from './constants';
 import { calculateNetWorth } from './netWorth';
 import { tryMarketEvent } from './events';
 
@@ -120,7 +120,7 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
   }
 
   // Add log entry
-  newState.logs = [log, ...newState.logs].slice(0, 50);
+  newState.logs = [log, ...newState.logs].slice(0, MAX_LOGS);
 
   // Market event — only fires if no tutorial event this roll
   if (!event) {
@@ -143,7 +143,7 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
       // Replace newState fields with the event-modified state
       Object.assign(newState, marketResult.newState);
       event = marketResult.event;
-      newState.logs = [marketResult.log, ...newState.logs].slice(0, 50);
+      newState.logs = [marketResult.log, ...newState.logs].slice(0, MAX_LOGS);
     }
   } else {
     console.log('[MarketEvent] skipped — tutorial event active this roll');

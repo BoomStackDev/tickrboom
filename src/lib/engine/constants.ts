@@ -12,6 +12,8 @@ export const CRASH_VALUE = 0; // price in cents where stock crashes
 
 export const WINNING_SCORE = 100_000_000_000; // $1 Billion in cents
 
+export const MAX_LOGS = 250;
+
 export const START_MODES: StartMode[] = [
   {
     id: 'hard',

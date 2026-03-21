@@ -1,4 +1,5 @@
 import type { GameState, TradeAction } from './types';
+import { MAX_LOGS } from './constants';
 
 export function executeTrade(state: GameState, action: TradeAction): GameState {
   const { type, stock, amount } = action;
@@ -13,6 +14,7 @@ export function executeTrade(state: GameState, action: TradeAction): GameState {
       stocks: { ...state.player.stocks },
       avgCosts: { ...state.player.avgCosts },
     },
+    logs: [...state.logs],
   };
 
   const player = newState.player;
@@ -41,6 +43,8 @@ export function executeTrade(state: GameState, action: TradeAction): GameState {
     player.money -= cost;
     player.stocks[stock] = newTotalShares;
     player.avgCosts[stock] = newTotalShares > 0 ? Math.round(totalNewCost / newTotalShares) : 0;
+
+    newState.logs = [`BUY ${sharesToBuy} ${stock} @ $${(price / 100).toFixed(2)} = -$${(cost / 100).toFixed(2)}`, ...newState.logs].slice(0, MAX_LOGS);
   } else {
     // SELL
     let sharesToSell: number;
@@ -56,6 +60,8 @@ export function executeTrade(state: GameState, action: TradeAction): GameState {
     const revenue = sharesToSell * price;
     player.money += revenue;
     player.stocks[stock] = currentShares - sharesToSell;
+
+    newState.logs = [`SELL ${sharesToSell} ${stock} @ $${(price / 100).toFixed(2)} = +$${(revenue / 100).toFixed(2)}`, ...newState.logs].slice(0, MAX_LOGS);
 
     // Reset avg cost if all sold
     if (player.stocks[stock] <= 0) {
