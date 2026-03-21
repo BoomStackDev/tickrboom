@@ -3,9 +3,7 @@ import { DEFAULT_STOCKS, SPRINT_ROLLS, TIMED_DURATION } from './constants';
 import { randomEventInterval } from './events';
 
 export function createNewGame(config: GameConfig): GameState {
-  const stockNames = config.stockNames && config.stockNames.length === 6
-    ? config.stockNames
-    : [...DEFAULT_STOCKS];
+  const stockNames = [...DEFAULT_STOCKS];
 
   const stockPrices: Record<string, number> = {};
   const stocks: Record<string, number> = {};

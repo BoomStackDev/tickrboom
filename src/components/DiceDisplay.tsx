@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
+import { DICE_LABELS } from '@/lib/engine/constants';
 
 type FlipState = 'none' | 'fast' | 'slow';
 
@@ -117,7 +118,7 @@ export function DiceDisplay() {
   return (
     <div className="flex gap-3 lg:gap-4 items-start justify-center">
       <DieBox
-        value={String(dice.stock)}
+        value={DICE_LABELS[dice.stock] ?? String(dice.stock)}
         label="Commodity"
         flipState={flipStock}
         colorClass={neutral}

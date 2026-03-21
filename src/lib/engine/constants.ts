@@ -1,6 +1,15 @@
 import type { StartMode, TickerItem } from './types';
 
-export const DEFAULT_STOCKS = ['GOLD', 'SILVER', 'OIL', 'BONDS', 'IND', 'GRAIN'];
+export const DEFAULT_STOCKS = ['GOLD', 'SILVER', 'OIL', 'BONDS', 'INDUSTRIALS', 'GRAIN'];
+
+export const DICE_LABELS: Record<string, string> = {
+  GOLD: 'GOLD',
+  SILVER: 'SLVR',
+  OIL: 'OIL',
+  BONDS: 'BNDS',
+  INDUSTRIALS: 'IND',
+  GRAIN: 'GRN',
+};
 
 export const ACTIONS = ['UP', 'DOWN', 'DIV'] as const;
 

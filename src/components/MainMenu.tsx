@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { TrendingUp, Trophy, Edit3 } from 'lucide-react';
+import { TrendingUp, Trophy } from 'lucide-react';
 import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useHaptics } from '@/hooks/useHaptics';
-import { START_MODES, DEFAULT_STOCKS, GAME_MODES } from '@/lib/engine/constants';
+import { START_MODES, GAME_MODES } from '@/lib/engine/constants';
 import type { GameState, GameMode, StartMode } from '@/lib/engine/types';
 import { TickerFooter } from './TickerFooter';
 
@@ -32,9 +31,6 @@ export function MainMenu() {
 
   const haptic = useHaptics();
 
-  const [editingStocks, setEditingStocks] = useState(false);
-  const [customStocks, setCustomStocks] = useState<string[]>([...DEFAULT_STOCKS]);
-
   const challengePlayed = hasPlayedChallenge();
   const newGameDisabled = selectedGameMode === 'challenge' && challengePlayed;
 
@@ -49,7 +45,6 @@ export function MainMenu() {
       newGame({
         mode: selectedMode,
         playerName: setupName,
-        stockNames: customStocks,
         gameMode: selectedGameMode,
       });
       setView('GAME');
@@ -191,34 +186,6 @@ export function MainMenu() {
             ))}
           </div>
           <p className="text-[11px] tb-text-muted mt-2 text-center">{selectedMode.desc}</p>
-        </div>
-
-        {/* Custom commodities */}
-        <div className="w-full mb-6">
-          <button
-            onClick={() => setEditingStocks(!editingStocks)}
-            className="flex items-center gap-1.5 text-[10px] tb-text-muted hover:tb-text-secondary mb-2 uppercase tracking-[0.1em] font-bold"
-          >
-            <Edit3 size={10} />
-            Customize Commodities
-          </button>
-          {editingStocks && (
-            <div className="grid grid-cols-2 gap-2">
-              {customStocks.map((name, i) => (
-                <input
-                  key={i}
-                  value={name}
-                  onChange={(e) => {
-                    const updated = [...customStocks];
-                    updated[i] = e.target.value.toUpperCase().slice(0, 8);
-                    setCustomStocks(updated);
-                  }}
-                  maxLength={8}
-                  className="tb-input border tb-border rounded px-3 py-2 text-xs font-[family-name:var(--font-mono)] font-bold min-h-[40px] focus:outline-none focus:border-accent-green/50"
-                />
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Action buttons */}

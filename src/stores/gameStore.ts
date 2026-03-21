@@ -26,7 +26,6 @@ interface GameStore {
   roll: () => RollOutcome | null;
   trade: (action: TradeAction) => void;
   setTradeAmount: (stock: string, amount: number | 'MAX') => void;
-  updateStockName: (index: number, name: string) => void;
   getNetWorth: () => number;
   getScore: () => number;
 
@@ -136,44 +135,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
       gameState: {
         ...gameState,
         tradeAmounts: { ...gameState.tradeAmounts, [stock]: amount },
-      },
-    });
-  },
-
-  updateStockName: (index: number, name: string) => {
-    const { gameState } = get();
-    if (!gameState) return;
-    const newNames = [...gameState.stockNames];
-    const oldName = newNames[index];
-    newNames[index] = name;
-
-    const newPrices = { ...gameState.stockPrices };
-    const newStocks = { ...gameState.player.stocks };
-    const newAvgCosts = { ...gameState.player.avgCosts };
-    const newTradeAmounts = { ...gameState.tradeAmounts };
-
-    if (oldName !== name) {
-      newPrices[name] = newPrices[oldName] ?? 100;
-      newStocks[name] = newStocks[oldName] ?? 0;
-      newAvgCosts[name] = newAvgCosts[oldName] ?? 0;
-      newTradeAmounts[name] = newTradeAmounts[oldName] ?? 500;
-      delete newPrices[oldName];
-      delete newStocks[oldName];
-      delete newAvgCosts[oldName];
-      delete newTradeAmounts[oldName];
-    }
-
-    set({
-      gameState: {
-        ...gameState,
-        stockNames: newNames,
-        stockPrices: newPrices,
-        tradeAmounts: newTradeAmounts,
-        player: {
-          ...gameState.player,
-          stocks: newStocks,
-          avgCosts: newAvgCosts,
-        },
       },
     });
   },

@@ -78,7 +78,6 @@ export interface StartMode {
 export interface GameConfig {
   mode: StartMode;
   playerName: string;
-  stockNames?: string[];
   gameMode: GameMode;
 }
 
