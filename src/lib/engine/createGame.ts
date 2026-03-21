@@ -1,5 +1,6 @@
 import type { GameState, GameConfig, DicePlaceholder } from './types';
 import { DEFAULT_STOCKS, SPRINT_ROLLS, TIMED_DURATION } from './constants';
+import { randomEventInterval } from './events';
 
 export function createNewGame(config: GameConfig): GameState {
   const stockNames = config.stockNames && config.stockNames.length === 6
@@ -50,5 +51,6 @@ export function createNewGame(config: GameConfig): GameState {
     timeRemaining: gameMode === 'timed' ? TIMED_DURATION : null,
     challengeDate: gameMode === 'challenge' ? today : null,
     rollIndex: 0,
+    nextEventRoll: randomEventInterval(),
   };
 }

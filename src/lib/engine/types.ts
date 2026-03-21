@@ -25,6 +25,7 @@ export interface GameEvent {
   title: string;
   message: string;
   type: 'profit' | 'danger' | 'info';
+  label?: string;
 }
 
 export interface Notification {
@@ -55,6 +56,7 @@ export interface GameState {
   timeRemaining: number | null;
   challengeDate: string | null;
   rollIndex: number;
+  nextEventRoll: number | null;
 }
 
 export interface RollOutcome {

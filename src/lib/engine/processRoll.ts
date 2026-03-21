@@ -1,6 +1,7 @@
 import type { GameState, DiceResult, RollOutcome, GameEvent, Notification } from './types';
 import { SPLIT_VALUE, CRASH_VALUE, WINNING_SCORE } from './constants';
 import { calculateNetWorth } from './netWorth';
+import { tryMarketEvent } from './events';
 
 export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
   // Deep clone state to avoid mutations
@@ -120,6 +121,17 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
 
   // Add log entry
   newState.logs = [log, ...newState.logs].slice(0, 50);
+
+  // Market event — only fires if no tutorial event this roll
+  if (!event) {
+    const marketResult = tryMarketEvent(newState);
+    if (marketResult) {
+      // Replace newState fields with the event-modified state
+      Object.assign(newState, marketResult.newState);
+      event = marketResult.event;
+      newState.logs = [marketResult.log, ...newState.logs].slice(0, 50);
+    }
+  }
 
   // Check win condition
   const netWorth = calculateNetWorth(newState);
