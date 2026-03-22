@@ -22,6 +22,7 @@
   --animate-firework-burst: firework-burst 0.8s ease-out forwards;
   --animate-pop-in: pop-in 0.3s ease-out forwards;
   --animate-badge-pulse: badge-pulse 2s ease-in-out infinite;
+  --animate-toast-slide-in: toast-slide-in 0.3s ease-out forwards;
 }
 
 /* ── Keyframes ── */
@@ -61,6 +62,11 @@
   0% { transform: rotateX(0deg); }
   50% { transform: rotateX(90deg); opacity: 0.3; }
   100% { transform: rotateX(0deg); }
+}
+
+@keyframes toast-slide-in {
+  0% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
 }
 
 @keyframes badge-pulse {

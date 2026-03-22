@@ -40,6 +40,16 @@ export interface TutorialFlags {
   divSkipped: boolean;
 }
 
+export interface SessionStats {
+  splitCount: number;
+  crashCount: number;
+  totalDividendsPaid: number; // cents
+  tradeCount: number;
+  eventCount: number;
+  lastFiveStocks: string[];
+  sessionElapsedSeconds: number;
+}
+
 export interface GameState {
   player: Player;
   stockPrices: Record<string, number>;
@@ -57,6 +67,7 @@ export interface GameState {
   challengeDate: string | null;
   rollIndex: number;
   nextEventRoll: number | null;
+  sessionStats: SessionStats;
 }
 
 export interface RollOutcome {

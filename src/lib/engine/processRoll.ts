@@ -15,6 +15,10 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
     stockPrices: { ...state.stockPrices },
     logs: [...state.logs],
     tutorialFlags: { ...state.tutorialFlags },
+    sessionStats: {
+      ...state.sessionStats,
+      lastFiveStocks: [...state.sessionStats.lastFiveStocks, dice.stock].slice(-5),
+    },
     dice,
     rollCount: state.rollCount + 1,
     rollIndex: state.rollIndex + 1,
@@ -33,6 +37,7 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
     if (newState.stockPrices[stock] > 100 && sharesOwned > 0) {
       const payout = amount * sharesOwned;
       player.money += payout;
+      newState.sessionStats.totalDividendsPaid += payout;
       log = `${stock} DIV: ${sharesOwned} shares x $${(amount / 100).toFixed(2)} = +$${(payout / 100).toFixed(2)}`;
       notification = { type: 'profit', msg: `${stock} DIVIDEND +$${(payout / 100).toFixed(2)}` };
 
@@ -86,6 +91,7 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
         }
       }
       newState.stockPrices[stock] = 100;
+      newState.sessionStats.splitCount++;
       log = `${stock} STOCK SPLIT! Price reset to $1.00. ${oldShares > 0 ? `Shares: ${oldShares} → ${oldShares * 2}` : 'You have no shares.'}`;
       notification = { type: 'profit', msg: `${stock} STOCK SPLIT!` };
 
@@ -105,6 +111,7 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
       player.stocks[stock] = 0;
       player.avgCosts[stock] = 0;
       newState.stockPrices[stock] = 100;
+      newState.sessionStats.crashCount++;
       log = `${stock} CRASHED! Price reset to $1.00. ${lostShares > 0 ? `Lost ${lostShares} shares!` : 'You had no shares.'}`;
       notification = { type: 'danger', msg: `${stock} CRASHED!` };
 
@@ -128,6 +135,7 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
     if (marketResult) {
       // Replace newState fields with the event-modified state
       Object.assign(newState, marketResult.newState);
+      newState.sessionStats.eventCount++;
       event = marketResult.event;
       newState.logs = [marketResult.log, ...newState.logs].slice(0, MAX_LOGS);
     }

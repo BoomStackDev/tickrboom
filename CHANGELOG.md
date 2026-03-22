@@ -7,6 +7,14 @@ Live URL: https://tickrboom.boomstack.dev
 
 ---
 
+## [0.4.4] — 2026-03-22
+### Fixed
+- Daily Challenge seeded RNG replaced — old Java-style `String.hashCode` had catastrophic avalanche failure, producing only 2-3 unique stocks over 200 rolls (e.g. 16 GOLD in a row). Replaced with FNV-1a string hash + Mulberry32 PRNG for proper distribution across all 6 stocks.
+
+**Commit:** c9fe309
+
+---
+
 ## [0.4.3] — 2026-03-21
 ### Changed
 - Renamed IND to INDUSTRIALS in default stock names for clarity
@@ -126,4 +134,4 @@ Live URL: https://tickrboom.boomstack.dev
 
 ---
 
-*Last updated: 2026-03-21*
+*Last updated: 2026-03-22*

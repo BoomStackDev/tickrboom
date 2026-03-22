@@ -8,8 +8,21 @@ import { executeTrade } from '@/lib/engine/trade';
 import { rollDice } from '@/lib/engine/rollDice';
 import { calculateNetWorth } from '@/lib/engine/netWorth';
 import { START_MODES } from '@/lib/engine/constants';
+import { checkAchievements, checkTradeAchievements } from '@/lib/engine/achievements';
 import { platform } from '@/lib/platform/local';
 import { useUIStore } from './uiStore';
+import { useAchievementStore } from './achievementStore';
+
+const DEFAULT_SESSION_STATS = {
+  splitCount: 0, crashCount: 0, totalDividendsPaid: 0,
+  tradeCount: 0, eventCount: 0, lastFiveStocks: [] as string[],
+  sessionElapsedSeconds: 0,
+};
+
+function ensureSessionStats(state: GameState): GameState {
+  if (state.sessionStats) return state;
+  return { ...state, sessionStats: { ...DEFAULT_SESSION_STATS } };
+}
 
 interface GameStore {
   // State
@@ -19,6 +32,7 @@ interface GameStore {
   highScore: number;
   manualSaves: SaveFile[];
   timerInterval: ReturnType<typeof setInterval> | null;
+  sessionInterval: ReturnType<typeof setInterval> | null;
 
   // Actions
   newGame: (config: GameConfig) => void;
@@ -32,6 +46,8 @@ interface GameStore {
   // Timer
   startTimer: () => void;
   stopTimer: () => void;
+  startSessionTimer: () => void;
+  stopSessionTimer: () => void;
 
   // Challenge
   getTodayKey: () => string;
@@ -62,11 +78,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
   highScore: 0,
   manualSaves: [],
   timerInterval: null,
+  sessionInterval: null,
 
   newGame: (config: GameConfig) => {
     get().stopTimer();
+    get().stopSessionTimer();
     const state = createNewGame(config);
     set({ gameState: state, selectedMode: config.mode, selectedGameMode: config.gameMode });
+    get().startSessionTimer();
     platform.trackEvent('game_start', { mode: config.mode.id, gameMode: config.gameMode });
 
     // Disable turbo for timed mode
@@ -83,11 +102,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   loadGame: (savedState: GameState, mode?: StartMode) => {
     get().stopTimer();
+    get().stopSessionTimer();
+    const withStats = ensureSessionStats(savedState);
     set({
-      gameState: savedState,
+      gameState: withStats,
       selectedMode: mode || get().selectedMode,
-      selectedGameMode: savedState.gameMode || 'freeplay',
+      selectedGameMode: withStats.gameMode || 'freeplay',
     });
+    if (!withStats.gameWon && !withStats.gameLost) get().startSessionTimer();
   },
 
   roll: () => {
@@ -110,9 +132,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
       platform.saveGame('tickrBoom_highScore', score.toString());
     }
 
+    // Check achievements after roll
+    const achStore = useAchievementStore.getState();
+    const newIds = checkAchievements(outcome.newState, calculateNetWorth(outcome.newState), achStore.unlockedIds);
+    if (newIds.length > 0) achStore.unlock(newIds);
+
     // Check for game end (sprint loss or win in any mode)
     if (outcome.newState.gameLost || outcome.newState.gameWon) {
       get().stopTimer();
+      get().stopSessionTimer();
       if (outcome.newState.gameMode === 'challenge') {
         get().markChallengeComplete();
       }
@@ -124,8 +152,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
   trade: (action: TradeAction) => {
     const { gameState } = get();
     if (!gameState) return;
+    const cashBefore = gameState.player.money;
     const newState = executeTrade(gameState, action);
+    if (newState === gameState) return; // trade was a no-op
+    const cashSpent = cashBefore - newState.player.money;
     set({ gameState: newState });
+
+    const achStore = useAchievementStore.getState();
+    const newIds = checkTradeAchievements(
+      newState,
+      action.type,
+      action.stock,
+      cashSpent,
+      cashBefore,
+      achStore.unlockedIds,
+    );
+    if (newIds.length > 0) achStore.unlock(newIds);
   },
 
   setTradeAmount: (stock: string, amount: number | 'MAX') => {
@@ -186,6 +228,35 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (timerInterval) {
       clearInterval(timerInterval);
       set({ timerInterval: null });
+    }
+  },
+
+  startSessionTimer: () => {
+    get().stopSessionTimer();
+    const interval = setInterval(() => {
+      const { gameState } = get();
+      if (!gameState || gameState.gameWon || gameState.gameLost) {
+        get().stopSessionTimer();
+        return;
+      }
+      set({
+        gameState: {
+          ...gameState,
+          sessionStats: {
+            ...gameState.sessionStats,
+            sessionElapsedSeconds: gameState.sessionStats.sessionElapsedSeconds + 1,
+          },
+        },
+      });
+    }, 1000);
+    set({ sessionInterval: interval });
+  },
+
+  stopSessionTimer: () => {
+    const { sessionInterval } = get();
+    if (sessionInterval) {
+      clearInterval(sessionInterval);
+      set({ sessionInterval: null });
     }
   },
 
@@ -259,11 +330,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   manualLoad: (save: SaveFile) => {
     get().stopTimer();
+    get().stopSessionTimer();
+    const withStats = ensureSessionStats(save.data);
     set({
-      gameState: save.data,
+      gameState: withStats,
       selectedMode: save.mode || START_MODES[0],
       selectedGameMode: save.gameMode || 'freeplay',
     });
+    if (!withStats.gameWon && !withStats.gameLost) get().startSessionTimer();
   },
 
   deleteSave: (id: string) => {

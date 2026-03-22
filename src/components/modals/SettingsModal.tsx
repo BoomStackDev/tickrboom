@@ -3,6 +3,7 @@
 import { X, Moon, Sun, Monitor } from 'lucide-react';
 import { useUIStore, type ThemeMode } from '@/stores/uiStore';
 import { useGameStore } from '@/stores/gameStore';
+import { useAchievementStore } from '@/stores/achievementStore';
 
 const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Moon }[] = [
   { value: 'dark', label: 'Dark', icon: Moon },
@@ -19,11 +20,13 @@ export function SettingsModal() {
   const toggleHaptics = useUIStore((s) => s.toggleHaptics);
   const setTheme = useUIStore((s) => s.setTheme);
   const resetData = useGameStore((s) => s.resetData);
+  const resetAchievements = useAchievementStore((s) => s.resetAchievements);
   const setView = useUIStore((s) => s.setView);
 
   const handleReset = () => {
-    if (confirm('Reset all data? This will clear your high score, saved games, and settings.')) {
+    if (confirm('Reset all data? This will clear your high score, saved games, achievements, and settings.')) {
       resetData();
+      resetAchievements();
       setView('MENU');
       toggleSettings();
     }

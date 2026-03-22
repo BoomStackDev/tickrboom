@@ -11,12 +11,14 @@ import { TutorialModal } from '@/components/modals/TutorialModal';
 import { WinModal } from '@/components/modals/WinModal';
 import { EventModal } from '@/components/modals/EventModal';
 import { SaveManagerModal } from '@/components/modals/SaveManagerModal';
+import { AchievementsModal } from '@/components/modals/AchievementsModal';
 
 export default function GameShell() {
   const view = useUIStore((s) => s.view);
   const showSettings = useUIStore((s) => s.showSettings);
   const showTutorial = useUIStore((s) => s.showTutorial);
   const showSaveManager = useUIStore((s) => s.showSaveManager);
+  const showAchievements = useUIStore((s) => s.showAchievements);
   const activeEvent = useUIStore((s) => s.activeEvent);
   const gameWon = useGameStore((s) => s.gameState?.gameWon ?? false);
   const theme = useUIStore((s) => s.theme);
@@ -40,6 +42,7 @@ export default function GameShell() {
       {showSettings && <SettingsModal />}
       {showTutorial && <TutorialModal />}
       {showSaveManager.show && <SaveManagerModal />}
+      {showAchievements && <AchievementsModal />}
       {activeEvent && <EventModal />}
       {gameWon && <WinModal />}
     </div>

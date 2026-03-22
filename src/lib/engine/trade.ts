@@ -14,6 +14,7 @@ export function executeTrade(state: GameState, action: TradeAction): GameState {
       stocks: { ...state.player.stocks },
       avgCosts: { ...state.player.avgCosts },
     },
+    sessionStats: { ...state.sessionStats, tradeCount: state.sessionStats.tradeCount + 1 },
     logs: [...state.logs],
   };
 

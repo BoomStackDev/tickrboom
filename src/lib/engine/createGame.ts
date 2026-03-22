@@ -50,5 +50,14 @@ export function createNewGame(config: GameConfig): GameState {
     challengeDate: gameMode === 'challenge' ? today : null,
     rollIndex: 0,
     nextEventRoll: randomEventInterval(),
+    sessionStats: {
+      splitCount: 0,
+      crashCount: 0,
+      totalDividendsPaid: 0,
+      tradeCount: 0,
+      eventCount: 0,
+      lastFiveStocks: [],
+      sessionElapsedSeconds: 0,
+    },
   };
 }

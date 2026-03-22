@@ -12,6 +12,7 @@ interface UIStore {
   isFlashing: boolean;
   showSettings: boolean;
   showTutorial: boolean;
+  showAchievements: boolean;
   showSaveManager: { show: boolean; mode: 'SAVE' | 'LOAD' };
   activeEvent: GameEvent | null;
   notification: Notification | null;
@@ -27,6 +28,7 @@ interface UIStore {
   setFlashing: (flashing: boolean) => void;
   toggleSettings: () => void;
   toggleTutorial: () => void;
+  setShowAchievements: (val: boolean) => void;
   openSaveManager: (mode: 'SAVE' | 'LOAD') => void;
   closeSaveManager: () => void;
   setActiveEvent: (event: GameEvent | null) => void;
@@ -45,6 +47,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
   isFlashing: false,
   showSettings: false,
   showTutorial: false,
+  showAchievements: false,
   showSaveManager: { show: false, mode: 'LOAD' },
   activeEvent: null,
   notification: null,
@@ -61,6 +64,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
   toggleSettings: () => set({ showSettings: !get().showSettings }),
 
   toggleTutorial: () => set({ showTutorial: !get().showTutorial }),
+  setShowAchievements: (val: boolean) => set({ showAchievements: val }),
 
   openSaveManager: (mode) => set({ showSaveManager: { show: true, mode } }),
   closeSaveManager: () => set({ showSaveManager: { show: false, mode: 'LOAD' } }),

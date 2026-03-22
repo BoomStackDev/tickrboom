@@ -7,6 +7,7 @@ import { StockCard } from './StockCard';
 import { NotificationBanner } from './NotificationBanner';
 import { MarketLog } from './MarketLog';
 import { GameFooter } from './GameFooter';
+import { AchievementToast } from './AchievementToast';
 import { GameOverModal } from './modals/GameOverModal';
 
 export function GameBoard() {
@@ -30,6 +31,7 @@ export function GameBoard() {
 
       <MarketLog />
       <GameFooter />
+      <AchievementToast />
       {gameLost && <GameOverModal />}
     </div>
   );

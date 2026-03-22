@@ -223,6 +223,13 @@ export function MainMenu() {
             </button>
             <span className="tb-text-muted">|</span>
             <button
+              onClick={() => { haptic(); useUIStore.getState().setShowAchievements(true); }}
+              className="text-xs tb-text-muted hover:tb-text-secondary font-bold uppercase tracking-wide transition-colors"
+            >
+              Achievements
+            </button>
+            <span className="tb-text-muted">|</span>
+            <button
               onClick={() => { haptic(); toggleSettings(); }}
               className="text-xs tb-text-muted hover:tb-text-secondary font-bold uppercase tracking-wide transition-colors"
             >

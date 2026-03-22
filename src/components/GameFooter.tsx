@@ -1,12 +1,13 @@
 'use client';
 
-import { Save, RotateCcw, Settings } from 'lucide-react';
+import { Save, RotateCcw, Settings, Trophy } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useGameStore } from '@/stores/gameStore';
 import { useHaptics } from '@/hooks/useHaptics';
 
 export function GameFooter() {
   const toggleSettings = useUIStore((s) => s.toggleSettings);
+  const setShowAchievements = useUIStore((s) => s.setShowAchievements);
   const openSaveManager = useUIStore((s) => s.openSaveManager);
   const setView = useUIStore((s) => s.setView);
   const autoSave = useGameStore((s) => s.autoSave);
@@ -29,6 +30,13 @@ export function GameFooter() {
       >
         <RotateCcw size={13} />
         Menu
+      </button>
+      <button
+        onClick={() => { haptic(); setShowAchievements(true); }}
+        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg tb-card border tb-border tb-text-secondary hover:bg-[var(--tb-hover)] font-bold text-xs min-h-[40px] transition-colors"
+      >
+        <Trophy size={13} />
+        Achievements
       </button>
       <button
         onClick={() => { haptic(); toggleSettings(); }}
