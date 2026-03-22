@@ -4,6 +4,7 @@ import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useHaptics } from '@/hooks/useHaptics';
 import { calculateNetWorth } from '@/lib/engine/netWorth';
+import { formatMoney } from '@/lib/utils/formatMoney';
 
 export function GameOverModal() {
   const gameState = useGameStore((s) => s.gameState);
@@ -17,14 +18,6 @@ export function GameOverModal() {
 
   const netWorth = calculateNetWorth(gameState);
   const score = netWorth * gameState.player.difficultyMult;
-
-  const formatMoney = (cents: number) => {
-    const dollars = cents / 100;
-    if (dollars >= 1_000_000_000) return `$${(dollars / 1_000_000_000).toFixed(2)}B`;
-    if (dollars >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(2)}M`;
-    if (dollars >= 1_000) return `$${(dollars / 1_000).toFixed(1)}k`;
-    return `$${dollars.toFixed(2)}`;
-  };
 
   const subtitle = gameState.gameMode === 'sprint'
     ? `Sprint Complete \u2014 ${gameState.rollCount} rolls`

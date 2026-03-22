@@ -7,6 +7,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { START_MODES, GAME_MODES } from '@/lib/engine/constants';
 import type { GameState, GameMode, StartMode } from '@/lib/engine/types';
 import { TickerFooter } from './TickerFooter';
+import { formatMoney } from '@/lib/utils/formatMoney';
 
 export function MainMenu() {
   const selectedMode = useGameStore((s) => s.selectedMode);
@@ -60,14 +61,6 @@ export function MainMenu() {
       loadGame(data, mode);
       setView('GAME');
     }
-  };
-
-  const formatMoney = (cents: number) => {
-    const dollars = cents / 100;
-    if (dollars >= 1_000_000_000) return `$${(dollars / 1_000_000_000).toFixed(2)}B`;
-    if (dollars >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(2)}M`;
-    if (dollars >= 1_000) return `$${(dollars / 1_000).toFixed(1)}k`;
-    return `$${dollars.toFixed(2)}`;
   };
 
   const modeContextLine = () => {

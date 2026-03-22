@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { X, Moon, Sun, Monitor } from 'lucide-react';
 import { useUIStore, type ThemeMode } from '@/stores/uiStore';
 import { useGameStore } from '@/stores/gameStore';
@@ -23,13 +24,14 @@ export function SettingsModal() {
   const resetAchievements = useAchievementStore((s) => s.resetAchievements);
   const setView = useUIStore((s) => s.setView);
 
+  const [confirmingReset, setConfirmingReset] = useState(false);
+
   const handleReset = () => {
-    if (confirm('Reset all data? This will clear your high score, saved games, achievements, and settings.')) {
-      resetData();
-      resetAchievements();
-      setView('MENU');
-      toggleSettings();
-    }
+    resetData();
+    resetAchievements();
+    setConfirmingReset(false);
+    setView('MENU');
+    toggleSettings();
   };
 
   return (
@@ -103,12 +105,32 @@ export function SettingsModal() {
             </div>
           </div>
 
-          <button
-            onClick={handleReset}
-            className="w-full py-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-danger-red font-bold text-xs hover:bg-red-500/20 min-h-[44px] transition-colors"
-          >
-            RESET ALL DATA
-          </button>
+          {confirmingReset ? (
+            <div className="tb-card border border-red-500/30 rounded-lg p-3 space-y-2">
+              <p className="text-xs text-danger-red font-bold text-center">Reset all data? This cannot be undone.</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setConfirmingReset(false)}
+                  className="flex-1 py-2 rounded-lg tb-card border tb-border tb-text-secondary font-bold text-xs min-h-[40px] hover:bg-[var(--tb-hover)] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="flex-1 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-danger-red font-bold text-xs min-h-[40px] hover:bg-red-500/30 transition-colors"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmingReset(true)}
+              className="w-full py-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-danger-red font-bold text-xs hover:bg-red-500/20 min-h-[44px] transition-colors"
+            >
+              RESET ALL DATA
+            </button>
+          )}
         </div>
       </div>
     </div>

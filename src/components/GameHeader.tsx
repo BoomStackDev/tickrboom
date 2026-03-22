@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { TrendingUp, Dice5, HelpCircle } from 'lucide-react';
 import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -9,6 +9,7 @@ import { usePopover } from '@/hooks/usePopover';
 import { WINNING_SCORE, TIMED_DURATION, ACTIONS, AMOUNTS } from '@/lib/engine/constants';
 import { DiceDisplay } from './DiceDisplay';
 import { calculateNetWorth } from '@/lib/engine/netWorth';
+import { formatMoney } from '@/lib/utils/formatMoney';
 
 export function GameHeader() {
   const gameState = useGameStore((s) => s.gameState);
@@ -24,6 +25,13 @@ export function GameHeader() {
 
   const rollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (rollIntervalRef.current) clearInterval(rollIntervalRef.current);
+      if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current);
+    };
+  }, []);
 
   const handleRoll = useCallback(() => {
     if (isRolling || !gameState || gameState.gameWon || gameState.gameLost) return;
@@ -79,14 +87,6 @@ export function GameHeader() {
   const netWorth = calculateNetWorth(gameState);
   const score = netWorth * gameState.player.difficultyMult;
   const goalProgress = Math.min((score / WINNING_SCORE) * 100, 100);
-
-  const formatMoney = (cents: number) => {
-    const dollars = cents / 100;
-    if (dollars >= 1_000_000_000) return `$${(dollars / 1_000_000_000).toFixed(2)}B`;
-    if (dollars >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(2)}M`;
-    if (dollars >= 1_000) return `$${(dollars / 1_000).toFixed(1)}k`;
-    return `$${dollars.toFixed(2)}`;
-  };
 
   // Mode-aware progress bar content
   const formatTime = (secs: number) => {

@@ -5,6 +5,7 @@ import { X, Save, Trash2, Check } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 import { useGameStore } from '@/stores/gameStore';
 import { useHaptics } from '@/hooks/useHaptics';
+import { formatMoney } from '@/lib/utils/formatMoney';
 
 export function SaveManagerModal() {
   const { mode } = useUIStore((s) => s.showSaveManager);
@@ -19,6 +20,7 @@ export function SaveManagerModal() {
 
   const [saveName, setSaveName] = useState('');
   const [overwriteId, setOverwriteId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const handleSave = () => {
     if (!saveName.trim()) return;
@@ -37,21 +39,20 @@ export function SaveManagerModal() {
 
   const handleDelete = (id: string) => {
     haptic();
-    if (confirm('Delete this save?')) deleteSave(id);
+    setConfirmDeleteId(id);
+  };
+
+  const confirmDelete = () => {
+    if (confirmDeleteId) {
+      deleteSave(confirmDeleteId);
+      setConfirmDeleteId(null);
+    }
   };
 
   const formatDate = (ts: number) => {
     return new Date(ts).toLocaleDateString(undefined, {
       month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
     });
-  };
-
-  const formatMoney = (cents: number) => {
-    const dollars = cents / 100;
-    if (dollars >= 1_000_000_000) return `$${(dollars / 1_000_000_000).toFixed(2)}B`;
-    if (dollars >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(2)}M`;
-    if (dollars >= 1_000) return `$${(dollars / 1_000).toFixed(1)}k`;
-    return `$${dollars.toFixed(2)}`;
   };
 
   return (
@@ -126,12 +127,29 @@ export function SaveManagerModal() {
                       LOAD
                     </button>
                   )}
-                  <button
-                    onClick={() => handleDelete(save.id)}
-                    className="p-1.5 hover:bg-red-500/10 rounded min-w-[36px] min-h-[36px] flex items-center justify-center text-danger-red"
-                  >
-                    <Trash2 size={13} />
-                  </button>
+                  {confirmDeleteId === save.id ? (
+                    <>
+                      <button
+                        onClick={() => setConfirmDeleteId(null)}
+                        className="px-2 py-1 rounded tb-text-muted text-[10px] font-bold min-h-[36px] hover:bg-[var(--tb-hover)]"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={confirmDelete}
+                        className="px-2 py-1 rounded bg-red-500/20 border border-red-500/30 text-danger-red text-[10px] font-bold min-h-[36px]"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleDelete(save.id)}
+                      className="p-1.5 hover:bg-red-500/10 rounded min-w-[36px] min-h-[36px] flex items-center justify-center text-danger-red"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

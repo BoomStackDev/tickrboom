@@ -4,6 +4,7 @@ import { Trophy } from 'lucide-react';
 import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
 import { calculateNetWorth } from '@/lib/engine/netWorth';
+import { formatMoney } from '@/lib/utils/formatMoney';
 
 export function WinModal() {
   const gameState = useGameStore((s) => s.gameState);
@@ -14,13 +15,6 @@ export function WinModal() {
 
   const netWorth = calculateNetWorth(gameState);
   const score = netWorth * gameState.player.difficultyMult;
-
-  const formatMoney = (cents: number) => {
-    const dollars = cents / 100;
-    if (dollars >= 1_000_000_000) return `$${(dollars / 1_000_000_000).toFixed(2)}B`;
-    if (dollars >= 1_000_000) return `$${(dollars / 1_000_000).toFixed(2)}M`;
-    return `$${dollars.toFixed(2)}`;
-  };
 
   const handleKeepTrading = () => {
     useGameStore.setState((state) => ({
