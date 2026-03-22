@@ -20,9 +20,14 @@ interface MarketEventDef {
   apply: (state: GameState) => { state: GameState; detail: string };
 }
 
+function snapToGrid(price: number): number {
+  return Math.round(price / 5) * 5;
+}
+
 function clampPrice(price: number): number {
-  // Keep prices in [1, 199] so events never directly trigger splits/crashes
-  return Math.max(1, Math.min(199, price));
+  // Keep prices in [5, 195] so events never directly trigger splits/crashes
+  // and prices stay on the 5-cent grid
+  return snapToGrid(Math.max(5, Math.min(195, price)));
 }
 
 function pickRandom<T>(arr: T[]): T {

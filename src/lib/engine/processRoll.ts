@@ -78,9 +78,9 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
       }
     }
   } else {
-    // UP or DOWN: change price
+    // UP or DOWN: change price (snap to 5-cent grid for safety)
     const direction = action === 'UP' ? 1 : -1;
-    newState.stockPrices[stock] += amount * direction;
+    newState.stockPrices[stock] = Math.round((newState.stockPrices[stock] + amount * direction) / 5) * 5;
 
     if (action === 'UP') {
       log = `${stock} +$${(amount / 100).toFixed(2)} → $${(newState.stockPrices[stock] / 100).toFixed(2)}`;

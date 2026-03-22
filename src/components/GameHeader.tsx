@@ -57,16 +57,19 @@ export function GameHeader() {
     }, tickRate);
 
     rollTimeoutRef.current = setTimeout(() => {
-      if (rollIntervalRef.current) clearInterval(rollIntervalRef.current);
-      const outcome = roll();
-      setRolling(false);
-      if (outcome) {
-        if (outcome.notification) setNotification(outcome.notification);
-        if (outcome.event) setActiveEvent(outcome.event);
-        autoSave();
-        if (outcome.notification && !outcome.event) {
-          setTimeout(() => setNotification(null), 3000);
+      try {
+        if (rollIntervalRef.current) clearInterval(rollIntervalRef.current);
+        const outcome = roll();
+        if (outcome) {
+          if (outcome.notification) setNotification(outcome.notification);
+          if (outcome.event) setActiveEvent(outcome.event);
+          autoSave();
+          if (outcome.notification && !outcome.event) {
+            setTimeout(() => setNotification(null), 3000);
+          }
         }
+      } finally {
+        setRolling(false);
       }
     }, turboMode ? 200 : 800);
   }, [isRolling, gameState, turboMode, roll, setRolling, setNotification, setActiveEvent, autoSave, haptic]);
