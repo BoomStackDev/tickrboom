@@ -2,13 +2,31 @@ import type { DiceResult } from './types';
 import { ACTIONS, AMOUNTS } from './constants';
 import { ShuffleBag } from './shuffleBag';
 
-function seededRandom(seed: string, index: number): number {
-  let h = 0;
-  const str = seed + ':' + index;
+/** Hash a string to a 32-bit integer with good avalanche (MurmurHash3-style). */
+function hashString(str: string): number {
+  let h = 0x811c9dc5; // FNV offset basis
   for (let i = 0; i < str.length; i++) {
-    h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 0x01000193); // FNV prime
   }
-  return (h >>> 0) / 0xFFFFFFFF;
+  // Murmur-style final mix for avalanche
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x85ebca6b);
+  h ^= h >>> 13;
+  h = Math.imul(h, 0xc2b2ae35);
+  h ^= h >>> 16;
+  return h >>> 0;
+}
+
+/** Mulberry32 — returns a () => number PRNG producing values in [0, 1). */
+function mulberry32(seed: number): () => number {
+  let s = seed | 0;
+  return () => {
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 0xFFFFFFFF;
+  };
 }
 
 // Lazy-initialized shuffle bags — avoids Math.random() during SSR
@@ -22,15 +40,13 @@ export function rollDice(
   seed?: string,
   rollIndex?: number,
 ): DiceResult {
-  // Seeded path (challenge mode) — completely unchanged
+  // Seeded path (challenge mode) — deterministic per date + roll
   if (seed !== undefined && rollIndex !== undefined) {
-    const r0 = seededRandom(seed, rollIndex * 3);
-    const r1 = seededRandom(seed, rollIndex * 3 + 1);
-    const r2 = seededRandom(seed, rollIndex * 3 + 2);
+    const rand = mulberry32(hashString(seed + ':' + rollIndex));
     return {
-      stock: stockNames[Math.floor(r0 * stockNames.length)],
-      action: ACTIONS[Math.floor(r1 * ACTIONS.length)],
-      amount: AMOUNTS[Math.floor(r2 * AMOUNTS.length)],
+      stock: stockNames[Math.floor(rand() * stockNames.length)],
+      action: ACTIONS[Math.floor(rand() * ACTIONS.length)],
+      amount: AMOUNTS[Math.floor(rand() * AMOUNTS.length)],
     };
   }
 
