@@ -35,17 +35,17 @@ export function AchievementToast() {
   const iconColor = RARITY_ICON[pendingToast.rarity];
 
   return (
-    <div className="fixed top-4 right-4 z-[900] animate-toast-slide-in pointer-events-auto">
+    <div className="fixed top-4 right-4 md:top-6 md:right-6 lg:top-8 lg:right-8 z-[900] animate-toast-slide-in pointer-events-auto">
       <div
-        className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${colors} tb-card card-elevated max-w-[300px] shadow-lg`}
+        className={`flex items-center gap-3 md:gap-4 lg:gap-5 px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 rounded-xl lg:rounded-2xl border ${colors} tb-card card-elevated max-w-[300px] md:max-w-[380px] lg:max-w-[440px] shadow-lg`}
         onClick={dismissToast}
       >
-        <Trophy size={20} className={iconColor} />
+        <Trophy size={20} className={`${iconColor} md:!w-6 md:!h-6 lg:!w-8 lg:!h-8`} />
         <div className="min-w-0">
-          <div className="text-[10px] uppercase tracking-widest tb-text-muted font-bold">
+          <div className="text-[10px] md:text-xs lg:text-sm uppercase tracking-widest tb-text-muted font-bold">
             Achievement Unlocked
           </div>
-          <div className="text-sm font-black tb-text truncate">{pendingToast.name}</div>
+          <div className="text-sm md:text-base lg:text-lg font-black tb-text truncate">{pendingToast.name}</div>
         </div>
       </div>
     </div>
