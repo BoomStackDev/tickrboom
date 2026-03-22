@@ -7,6 +7,40 @@ Live URL: https://tickrboom.boomstack.dev
 
 ---
 
+## [0.5.1] — 2026-03-22
+### Fixed
+- AchievementToast responsive sizing for large desktop monitors
+- Toast now scales up at md: and lg: breakpoints (width, padding, icon, font sizes)
+- Position offset also increases at larger breakpoints for better visual balance
+
+---
+
+## [0.5.0] — 2026-03-22 — Phase 4 Complete: Achievements System
+### Added
+- SessionStats tracking on GameState: splitCount, crashCount, totalDividendsPaid,
+  tradeCount, eventCount, lastFiveStocks (rolling 5-stock window), sessionElapsedSeconds
+- Session elapsed timer: starts on new game, stops on game over, persists through saves
+- achievements.ts: pure engine file, 20 achievement definitions across 4 categories
+- achievementStore.ts: Zustand store, persists to localStorage (tickrboom_achievements),
+  toast queue management
+- AchievementToast.tsx: slide-in toast, top-right corner, auto-dismisses after 3s,
+  color-coded by rarity (common/rare/epic/legendary)
+- AchievementsModal.tsx: full gallery with 4 category tabs, rarity badges, secret
+  achievements shown as "???" until unlocked, X/20 unlocked count in header
+- Trophy button added to GameFooter
+- Achievements link added to MainMenu alongside Tutorial and Settings
+- Reset Data in SettingsModal now also clears achievements
+
+### Achievements (20 total):
+- Wealth (5): First Million, Eight Figures, Hundred Millionaire, Billionaire,
+  Started From the Bottom
+- Trading (5): Diversified, Day Trader, Buy the Dip, Sell the Peak, All In
+- Survival (5): Split King, Crash Test Dummy, Dividend Collector, News Junkie, Marathon
+- Secret (5): Speed Run (tiered by difficulty/time, freeplay only), Penny Stock Hero,
+  Rock Bottom, Hot Streak, Sprint Master
+
+---
+
 ## [0.4.4] — 2026-03-22
 ### Fixed
 - Daily Challenge seeded RNG replaced — old Java-style `String.hashCode` had catastrophic avalanche failure, producing only 2-3 unique stocks over 200 rolls (e.g. 16 GOLD in a row). Replaced with FNV-1a string hash + Mulberry32 PRNG for proper distribution across all 6 stocks.

@@ -16,6 +16,7 @@ interface UIStore {
   showSaveManager: { show: boolean; mode: 'SAVE' | 'LOAD' };
   activeEvent: GameEvent | null;
   notification: Notification | null;
+  activePopover: string | null;
   turboMode: boolean;
   haptics: boolean;
   setupName: string;
@@ -33,6 +34,7 @@ interface UIStore {
   closeSaveManager: () => void;
   setActiveEvent: (event: GameEvent | null) => void;
   setNotification: (notification: Notification | null) => void;
+  setActivePopover: (id: string | null) => void;
   toggleTurbo: () => void;
   toggleHaptics: () => void;
   setSetupName: (name: string) => void;
@@ -51,6 +53,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
   showSaveManager: { show: false, mode: 'LOAD' },
   activeEvent: null,
   notification: null,
+  activePopover: null,
   turboMode: false,
   haptics: true,
   setupName: 'Trader 1',
@@ -71,6 +74,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
 
   setActiveEvent: (event) => set({ activeEvent: event }),
   setNotification: (notification) => set({ notification }),
+  setActivePopover: (id) => set({ activePopover: id }),
 
   toggleTurbo: () => {
     const newMode = !get().turboMode;

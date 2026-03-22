@@ -3,10 +3,30 @@
 import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useHaptics } from '@/hooks/useHaptics';
+import { usePopover } from '@/hooks/usePopover';
 import { getDynamicIncrements } from '@/lib/engine/increments';
 import { SPLIT_VALUE } from '@/lib/engine/constants';
 import { calculateNetWorth } from '@/lib/engine/netWorth';
 import { useState } from 'react';
+
+const BADGE_HELP: Record<string, { title: string; body: string }> = {
+  DANGER: {
+    title: 'DANGER',
+    body: 'This stock is near $0.00. If it hits $0.00 it crashes \u2014 you lose all your shares and the price resets to $1.00.',
+  },
+  'NO YIELD': {
+    title: 'NO YIELD',
+    body: 'Dividends only pay when the price is strictly above $1.00. This stock is at or below $1.00, so dividend rolls won\u2019t pay out.',
+  },
+  YIELD: {
+    title: 'YIELD',
+    body: 'This stock is above $1.00. If a dividend is rolled, you\u2019ll receive a cash payout for every share you own.',
+  },
+  'SPLIT WATCH': {
+    title: 'SPLIT WATCH',
+    body: 'This stock is close to $2.00. If it hits $2.00 it splits \u2014 your share count doubles instantly and the price resets to $1.00.',
+  },
+};
 
 function getStatusBadge(price: number) {
   if (price <= 25) return { label: 'DANGER', cls: 'bg-red-500/15 text-danger-red border-red-500/30' };
@@ -29,6 +49,7 @@ export function StockCard({ stock }: StockCardProps) {
   const gameState = useGameStore((s) => s.gameState);
   const isRolling = useUIStore((s) => s.isRolling);
   const haptic = useHaptics();
+  const popover = usePopover(`badge-${stock}`);
 
   const [customInput, setCustomInput] = useState('');
 
@@ -45,6 +66,7 @@ export function StockCard({ stock }: StockCardProps) {
   };
 
   const pnl = shares > 0 ? (price - avgCost) * shares : 0;
+  const help = BADGE_HELP[status.label];
 
   return (
     <div className="tb-card card-elevated border tb-border rounded-xl p-3 lg:p-5 hover:border-[var(--tb-text-muted)] transition-colors">
@@ -52,25 +74,48 @@ export function StockCard({ stock }: StockCardProps) {
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1.5">
           <span className="font-bold tb-text text-xs lg:text-sm tracking-wide">{stock}</span>
-          <span className={`text-[9px] px-1.5 py-px rounded-full border font-bold ${status.cls}`}>
-            {status.label}
-          </span>
+          <div
+            className="relative"
+            onMouseLeave={popover.close}
+          >
+            <button
+              onClick={(e) => { e.stopPropagation(); popover.toggle(); }}
+              className={`text-[9px] px-1.5 py-px rounded-full border font-bold cursor-help ${status.cls}`}
+            >
+              {status.label}
+            </button>
+            {popover.isOpen && help && (
+              <div
+                className="absolute left-0 bottom-full mb-1.5 z-50 w-[220px] p-3 rounded-xl tb-card border tb-border shadow-lg animate-pop-in card-elevated"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className={`text-xs font-bold mb-1 ${status.cls.split(' ').find((c) => c.startsWith('text-')) || 'tb-text'}`}>
+                  {help.title}
+                </div>
+                <div className="text-xs tb-text-muted leading-relaxed">{help.body}</div>
+              </div>
+            )}
+          </div>
         </div>
         <span className="font-[family-name:var(--font-mono)] font-bold tb-text text-sm lg:text-base">
           ${(price / 100).toFixed(2)}
         </span>
       </div>
 
-      {/* Price bar */}
-      <div className="w-full h-1 bg-[var(--tb-border)] rounded-full mb-2 overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-300 ${
-            price <= 25 ? 'bg-danger-red' :
-            price >= SPLIT_VALUE - 25 ? 'bg-emerald-400' :
-            'bg-accent-green'
-          }`}
-          style={{ width: `${priceBarPercent}%` }}
-        />
+      {/* Price bar with end labels */}
+      <div className="flex items-center gap-1.5 mb-2">
+        <span className="text-[9px] font-bold text-danger-red flex-none">$0</span>
+        <div className="flex-1 h-1 bg-[var(--tb-border)] rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${
+              price <= 25 ? 'bg-danger-red' :
+              price >= SPLIT_VALUE - 25 ? 'bg-emerald-400' :
+              'bg-accent-green'
+            }`}
+            style={{ width: `${priceBarPercent}%` }}
+          />
+        </div>
+        <span className="text-[9px] font-bold text-emerald-400 flex-none">$2 SPLIT</span>
       </div>
 
       {/* Holdings row — single tight line */}

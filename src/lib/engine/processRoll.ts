@@ -66,6 +66,16 @@ export function processRoll(state: GameState, dice: DiceResult): RollOutcome {
     } else {
       log = `${stock} DIV: You own 0 shares`;
       notification = { type: 'neutral', msg: `${stock} DIVIDEND - You have no shares` };
+
+      // Tutorial: first missed dividend (reuse divPaid flag)
+      if (!newState.tutorialFlags.divPaid) {
+        newState.tutorialFlags.divPaid = true;
+        event = {
+          title: 'Missed Dividend',
+          message: `${stock} just paid a dividend \u2014 but you don\u2019t own any shares, so you received nothing. Buy shares in stocks above $1.00 to collect dividend payouts.`,
+          type: 'info',
+        };
+      }
     }
   } else {
     // UP or DOWN: change price

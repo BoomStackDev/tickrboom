@@ -1,10 +1,11 @@
 'use client';
 
 import { useRef, useCallback } from 'react';
-import { TrendingUp, Dice5 } from 'lucide-react';
+import { TrendingUp, Dice5, HelpCircle } from 'lucide-react';
 import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useHaptics } from '@/hooks/useHaptics';
+import { usePopover } from '@/hooks/usePopover';
 import { WINNING_SCORE, TIMED_DURATION, ACTIONS, AMOUNTS } from '@/lib/engine/constants';
 import { DiceDisplay } from './DiceDisplay';
 import { calculateNetWorth } from '@/lib/engine/netWorth';
@@ -19,6 +20,7 @@ export function GameHeader() {
   const setNotification = useUIStore((s) => s.setNotification);
   const turboMode = useUIStore((s) => s.turboMode);
   const haptic = useHaptics();
+  const scorePopover = usePopover('score-help');
 
   const rollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -139,6 +141,28 @@ export function GameHeader() {
     );
   };
 
+  const scoreHelpPopover = (
+    <div className="relative" onMouseLeave={scorePopover.close}>
+      <button
+        onClick={(e) => { e.stopPropagation(); scorePopover.toggle(); }}
+        className="w-5 h-5 flex items-center justify-center rounded-full border tb-border tb-text-muted hover:bg-[var(--tb-hover)] transition-colors"
+      >
+        <HelpCircle size={10} />
+      </button>
+      {scorePopover.isOpen && (
+        <div
+          className="absolute right-0 top-full mt-1.5 z-50 w-[220px] p-3 rounded-xl tb-card border tb-border shadow-lg animate-pop-in card-elevated"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="text-xs font-bold tb-text mb-1">Score</div>
+          <div className="text-xs tb-text-muted leading-relaxed">
+            Your score is your Net Worth multiplied by your difficulty bonus. Hard mode (5x) earns 5× more score than Easy mode (1x).
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   const rollDisabled = isRolling || gameState.gameWon || gameState.gameLost || !!useUIStore.getState().activeEvent;
   const rollColorClass = isRolling
     ? 'bg-[var(--tb-border)] tb-text-muted cursor-not-allowed'
@@ -198,7 +222,8 @@ export function GameHeader() {
             <div className="text-[10px] tb-text-muted uppercase tracking-wider">Cash</div>
             <div className="font-[family-name:var(--font-mono)] font-bold tb-text text-base">{formatMoney(gameState.player.money)}</div>
           </div>
-          <div className="tb-card border tb-border rounded-lg px-3 py-3 text-center card-elevated w-32 flex-none">
+          <div className="tb-card border tb-border rounded-lg px-3 py-3 text-center card-elevated w-32 flex-none relative">
+            <div className="absolute top-1.5 right-1.5">{scoreHelpPopover}</div>
             <div className="text-[10px] tb-text-muted uppercase tracking-wider">Score</div>
             <div className="font-[family-name:var(--font-mono)] font-bold text-yellow-400 text-base">{formatMoney(score)}</div>
           </div>
@@ -239,7 +264,8 @@ export function GameHeader() {
             <div className="text-[9px] tb-text-muted uppercase tracking-wider">Cash</div>
             <div className="font-[family-name:var(--font-mono)] font-bold tb-text text-sm">{formatMoney(gameState.player.money)}</div>
           </div>
-          <div className="tb-card border tb-border rounded-lg px-2 py-1 text-center card-elevated">
+          <div className="tb-card border tb-border rounded-lg px-2 py-1 text-center card-elevated relative">
+            <div className="absolute top-0.5 right-0.5">{scoreHelpPopover}</div>
             <div className="text-[9px] tb-text-muted uppercase tracking-wider">Score</div>
             <div className="font-[family-name:var(--font-mono)] font-bold text-yellow-400 text-sm">{formatMoney(score)}</div>
           </div>

@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { HelpCircle } from 'lucide-react';
 import { useGameStore } from '@/stores/gameStore';
 import { useUIStore } from '@/stores/uiStore';
+import { usePopover } from '@/hooks/usePopover';
 import { DICE_LABELS } from '@/lib/engine/constants';
 
 type FlipState = 'none' | 'fast' | 'slow';
@@ -49,6 +51,7 @@ export function DiceDisplay() {
   const dice = useGameStore((s) => s.gameState?.dice);
   const isRolling = useUIStore((s) => s.isRolling);
   const prevRollingRef = useRef(false);
+  const popover = usePopover('dice-help');
 
   const [flipStock, setFlipStock] = useState<FlipState>('none');
   const [flipAction, setFlipAction] = useState<FlipState>('none');
@@ -135,6 +138,27 @@ export function DiceDisplay() {
         flipState={flipAmount}
         colorClass={neutral}
       />
+      <div className="relative flex items-start pt-3" onMouseLeave={popover.close}>
+        <button
+          onClick={(e) => { e.stopPropagation(); popover.toggle(); }}
+          className="w-7 h-7 flex items-center justify-center rounded-full border tb-border tb-text-muted hover:bg-[var(--tb-hover)] transition-colors"
+        >
+          <HelpCircle size={14} />
+        </button>
+        {popover.isOpen && (
+          <div
+            className="absolute right-0 top-full mt-1.5 z-50 w-[200px] p-3 rounded-xl tb-card border tb-border shadow-lg animate-pop-in card-elevated"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-xs font-bold tb-text mb-2">How Dice Work</div>
+            <div className="space-y-1.5 text-xs tb-text-muted leading-relaxed">
+              <div><span className="text-accent-green font-bold">{'\u25B2'} UP</span> — Price rises by the amount shown</div>
+              <div><span className="text-danger-red font-bold">{'\u25BC'} DN</span> — Price falls by the amount shown</div>
+              <div><span className="text-blue-400 font-bold">$ DIV</span> — Dividend paid per share (only if price &gt; $1.00)</div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
